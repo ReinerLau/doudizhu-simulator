@@ -1,0 +1,7 @@
+---
+description: 技术要求
+globs:
+alwaysApply: true
+---
+
+- 禁止使用 Ant Design 的图标, 只使用 Material Design Icons 作为图标
