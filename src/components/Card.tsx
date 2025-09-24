@@ -83,7 +83,7 @@ const Card: React.FC<CardProps> = ({
     <div
       className={`
         relative w-16 h-20 rounded-lg border-2 shadow-md cursor-pointer
-        transition-all duration-200 hover:shadow-lg hover:scale-105
+        transition-all duration-200 hover:shadow-lg hover:-translate-y-2
         ${cardStyle.bgColor}
         ${cardStyle.textColor}
         ${cardStyle.borderColor}
