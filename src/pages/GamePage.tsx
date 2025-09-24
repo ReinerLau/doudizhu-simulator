@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import { useNavigate, useParams } from "react-router";
+import { mockGames } from "../data/mockGames";
 
 /**
  * 对局页面组件 - 正常模式
@@ -8,6 +9,11 @@ import { useNavigate, useParams } from "react-router";
 function GamePage() {
   const navigate = useNavigate();
   const { gameId } = useParams<{ gameId: string }>();
+
+  /**
+   * 根据 gameId 获取对局信息
+   */
+  const currentGame = mockGames.find((game) => game.id === Number(gameId));
 
   /**
    * 返回首页
@@ -43,7 +49,8 @@ function GamePage() {
           >
             返回
           </Button>
-          <h1 className="text-xl font-semibold">对局 #{gameId}</h1>
+          {/* 对局名称 */}
+          <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
           <div></div>
         </div>
       </div>
