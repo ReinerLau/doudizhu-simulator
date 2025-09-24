@@ -81,9 +81,6 @@ function GamePage() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
-                  手牌: {currentGame?.cards.farmer2.length}张
-                </p>
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer2")}>
@@ -122,9 +119,6 @@ function GamePage() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
-                  手牌: {currentGame?.cards.farmer1.length}张
-                </p>
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer1")}>
@@ -152,9 +146,6 @@ function GamePage() {
                     <Card key={index} value={cardValue} className="scale-90" />
                   ))}
                 </div>
-                <p className="text-sm text-gray-500">
-                  手牌: {currentGame?.cards.landlord.length}张
-                </p>
               </div>
               <div className="flex gap-3 justify-center">
                 <Button size="large" onClick={() => handlePass("landlord")}>
