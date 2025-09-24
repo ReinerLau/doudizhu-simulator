@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { mockGames } from "../data/mockGames";
+import Card from "../components/Card";
 
 /**
  * 对局页面组件 - 正常模式
@@ -60,10 +61,29 @@ function GamePage() {
         <div className="h-full relative">
           {/* 顶家 (左上角) */}
           <div className="absolute left-8 top-8">
-            <div className="bg-white rounded-lg shadow-md p-4 min-w-48">
+            <div className="bg-white rounded-lg shadow-md p-4 min-w-64">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-blue-600">顶家</h3>
-                <p className="text-sm text-gray-500">手牌: 17张</p>
+                {/* 手牌展示 */}
+                <div className="flex flex-wrap gap-1 justify-center mb-2 max-h-32 overflow-y-auto">
+                  {currentGame?.cards.farmer2
+                    .slice(0, 8)
+                    .map((cardValue, index) => (
+                      <Card
+                        key={index}
+                        value={cardValue}
+                        className="scale-75"
+                      />
+                    ))}
+                  {currentGame && currentGame.cards.farmer2.length > 8 && (
+                    <div className="text-xs text-gray-400 self-center">
+                      +{currentGame.cards.farmer2.length - 8}张
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  手牌: {currentGame?.cards.farmer2.length}张
+                </p>
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer2")}>
@@ -82,10 +102,29 @@ function GamePage() {
 
           {/* 下家 (右上角) */}
           <div className="absolute right-8 top-8">
-            <div className="bg-white rounded-lg shadow-md p-4 min-w-48">
+            <div className="bg-white rounded-lg shadow-md p-4 min-w-64">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-green-600">下家</h3>
-                <p className="text-sm text-gray-500">手牌: 17张</p>
+                {/* 手牌展示 */}
+                <div className="flex flex-wrap gap-1 justify-center mb-2 max-h-32 overflow-y-auto">
+                  {currentGame?.cards.farmer1
+                    .slice(0, 8)
+                    .map((cardValue, index) => (
+                      <Card
+                        key={index}
+                        value={cardValue}
+                        className="scale-75"
+                      />
+                    ))}
+                  {currentGame && currentGame.cards.farmer1.length > 8 && (
+                    <div className="text-xs text-gray-400 self-center">
+                      +{currentGame.cards.farmer1.length - 8}张
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  手牌: {currentGame?.cards.farmer1.length}张
+                </p>
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer1")}>
@@ -104,10 +143,18 @@ function GamePage() {
 
           {/* 地主 (底部居中) */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <div className="bg-white rounded-lg shadow-md p-6 min-w-64">
+            <div className="bg-white rounded-lg shadow-md p-6 min-w-80">
               <div className="text-center mb-4">
                 <h3 className="text-xl font-semibold text-red-600">地主</h3>
-                <p className="text-sm text-gray-500">手牌: 20张</p>
+                {/* 手牌展示 */}
+                <div className="flex flex-wrap gap-1 justify-center mb-3 max-h-40 overflow-y-auto">
+                  {currentGame?.cards.landlord.map((cardValue, index) => (
+                    <Card key={index} value={cardValue} className="scale-90" />
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500">
+                  手牌: {currentGame?.cards.landlord.length}张
+                </p>
               </div>
               <div className="flex gap-3 justify-center">
                 <Button size="large" onClick={() => handlePass("landlord")}>
