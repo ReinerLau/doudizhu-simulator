@@ -33,8 +33,6 @@ interface CardProps {
   onClick?: () => void;
   /** 额外的 CSS 类名 */
   className?: string;
-  /** 内联样式 */
-  style?: React.CSSProperties;
 }
 
 /**
@@ -46,7 +44,6 @@ const Card: React.FC<CardProps> = ({
   selected = false,
   onClick,
   className = "",
-  style,
 }) => {
   /**
    * 根据点数获取显示文本和样式
@@ -97,7 +94,6 @@ const Card: React.FC<CardProps> = ({
         }
         ${className}
       `}
-      style={style}
       onClick={onClick}
     >
       {/* 左上角点数 */}

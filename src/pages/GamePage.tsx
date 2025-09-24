@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { mockGames } from "../data/mockGames";
-import Card from "../components/Card";
+import HandCards from "../components/HandCards";
 
 /**
  * 对局页面组件 - 正常模式
@@ -65,23 +65,7 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-blue-600">顶家</h3>
                 {/* 手牌展示 */}
-                <div className="flex justify-center mb-2 max-h-32 overflow-x-auto">
-                  {currentGame?.cards.farmer2
-                    .slice(0, 8)
-                    .map((cardValue, index) => (
-                      <Card
-                        key={index}
-                        value={cardValue}
-                        className={`scale-75 ${index > 0 ? "-ml-10" : ""}`}
-                        style={{ zIndex: index }}
-                      />
-                    ))}
-                  {currentGame && currentGame.cards.farmer2.length > 8 && (
-                    <div className="text-xs text-gray-400 self-center">
-                      +{currentGame.cards.farmer2.length - 8}张
-                    </div>
-                  )}
-                </div>
+                <HandCards cards={currentGame?.cards.farmer2 || []} />
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer2")}>
@@ -104,23 +88,7 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-green-600">下家</h3>
                 {/* 手牌展示 */}
-                <div className="flex justify-center mb-2 max-h-32 overflow-x-auto">
-                  {currentGame?.cards.farmer1
-                    .slice(0, 8)
-                    .map((cardValue, index) => (
-                      <Card
-                        key={index}
-                        value={cardValue}
-                        className={`scale-75 ${index > 0 ? "-ml-10" : ""}`}
-                        style={{ zIndex: index }}
-                      />
-                    ))}
-                  {currentGame && currentGame.cards.farmer1.length > 8 && (
-                    <div className="text-xs text-gray-400 self-center">
-                      +{currentGame.cards.farmer1.length - 8}张
-                    </div>
-                  )}
-                </div>
+                <HandCards cards={currentGame?.cards.farmer1 || []} />
               </div>
               <div className="flex gap-2 justify-center">
                 <Button size="small" onClick={() => handlePass("farmer1")}>
@@ -143,16 +111,7 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-xl font-semibold text-red-600">地主</h3>
                 {/* 手牌展示 */}
-                <div className="flex justify-center mb-3 max-h-40 pt-2 overflow-x-auto">
-                  {currentGame?.cards.landlord.map((cardValue, index) => (
-                    <Card
-                      key={index}
-                      value={cardValue}
-                      className={index > 0 ? "-ml-12" : ""}
-                      style={{ zIndex: index }}
-                    />
-                  ))}
-                </div>
+                <HandCards cards={currentGame?.cards.landlord || []} />
               </div>
               <div className="flex gap-3 justify-center">
                 <Button size="large" onClick={() => handlePass("landlord")}>
