@@ -97,18 +97,12 @@ const Card: React.FC<CardProps> = ({
       onClick={onClick}
     >
       {/* 左上角点数 */}
-      <div className="absolute top-0.5 left-0.5 text-xs font-bold leading-none">
-        {cardStyle.isJoker ? (
-          <div className="flex flex-col items-center">
-            {cardStyle.text.split("").map((letter, index) => (
-              <span key={index} className="leading-none">
-                {letter}
-              </span>
-            ))}
-          </div>
-        ) : (
-          cardStyle.text
-        )}
+      <div
+        className={`absolute top-0.5 left-0.5 text-xs font-bold leading-none ${
+          cardStyle.isJoker ? "w-3 break-all" : ""
+        }`}
+      >
+        {cardStyle.text}
       </div>
     </div>
   );
