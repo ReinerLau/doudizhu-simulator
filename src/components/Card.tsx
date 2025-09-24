@@ -64,20 +64,12 @@ const Card: React.FC<CardProps> = ({
           textColor: "text-white",
           borderColor: "border-gray-600",
         };
-      case "2":
-      case "A":
-        return {
-          text: cardValue,
-          bgColor: "bg-gradient-to-br from-orange-400 to-orange-500",
-          textColor: "text-white",
-          borderColor: "border-orange-300",
-        };
       default:
         return {
           text: cardValue,
-          bgColor: "bg-gradient-to-br from-blue-50 to-blue-100",
-          textColor: "text-gray-800",
-          borderColor: "border-blue-200",
+          bgColor: "bg-white",
+          textColor: "text-black",
+          borderColor: "border-gray-300",
         };
     }
   };
@@ -103,22 +95,6 @@ const Card: React.FC<CardProps> = ({
     >
       {/* 左上角点数 */}
       <div className="absolute top-0.5 left-0.5 text-xs font-bold leading-none">
-        {cardStyle.text}
-      </div>
-
-      {/* 中央点数 */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span
-          className={`font-bold ${
-            cardStyle.text.length > 1 ? "text-xs" : "text-lg"
-          }`}
-        >
-          {cardStyle.text}
-        </span>
-      </div>
-
-      {/* 右下角点数（旋转180度） */}
-      <div className="absolute bottom-0.5 right-0.5 text-xs font-bold leading-none transform rotate-180">
         {cardStyle.text}
       </div>
     </div>
