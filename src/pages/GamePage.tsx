@@ -65,14 +65,15 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-blue-600">顶家</h3>
                 {/* 手牌展示 */}
-                <div className="flex flex-wrap gap-1 justify-center mb-2 max-h-32 overflow-y-auto">
+                <div className="flex justify-center mb-2 max-h-32 overflow-x-auto">
                   {currentGame?.cards.farmer2
                     .slice(0, 8)
                     .map((cardValue, index) => (
                       <Card
                         key={index}
                         value={cardValue}
-                        className="scale-75"
+                        className={`scale-75 ${index > 0 ? "-ml-10" : ""}`}
+                        style={{ zIndex: index }}
                       />
                     ))}
                   {currentGame && currentGame.cards.farmer2.length > 8 && (
@@ -103,14 +104,15 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-green-600">下家</h3>
                 {/* 手牌展示 */}
-                <div className="flex flex-wrap gap-1 justify-center mb-2 max-h-32 overflow-y-auto">
+                <div className="flex justify-center mb-2 max-h-32 overflow-x-auto">
                   {currentGame?.cards.farmer1
                     .slice(0, 8)
                     .map((cardValue, index) => (
                       <Card
                         key={index}
                         value={cardValue}
-                        className="scale-75"
+                        className={`scale-75 ${index > 0 ? "-ml-10" : ""}`}
+                        style={{ zIndex: index }}
                       />
                     ))}
                   {currentGame && currentGame.cards.farmer1.length > 8 && (
@@ -141,9 +143,14 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-xl font-semibold text-red-600">地主</h3>
                 {/* 手牌展示 */}
-                <div className="flex flex-wrap gap-1 justify-center mb-3 max-h-40 pt-2">
+                <div className="flex justify-center mb-3 max-h-40 pt-2 overflow-x-auto">
                   {currentGame?.cards.landlord.map((cardValue, index) => (
-                    <Card key={index} value={cardValue} />
+                    <Card
+                      key={index}
+                      value={cardValue}
+                      className={index > 0 ? "-ml-12" : ""}
+                      style={{ zIndex: index }}
+                    />
                   ))}
                 </div>
               </div>
