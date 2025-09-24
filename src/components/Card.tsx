@@ -52,17 +52,19 @@ const Card: React.FC<CardProps> = ({
     switch (cardValue) {
       case "D":
         return {
-          text: "大王",
-          bgColor: "bg-gradient-to-br from-red-500 to-red-600",
-          textColor: "text-white",
-          borderColor: "border-red-400",
+          text: "JOKER",
+          bgColor: "bg-white",
+          textColor: "text-red-500",
+          borderColor: "border-gray-300",
+          isJoker: true,
         };
       case "X":
         return {
-          text: "小王",
-          bgColor: "bg-gradient-to-br from-gray-700 to-gray-800",
-          textColor: "text-white",
-          borderColor: "border-gray-600",
+          text: "JOKER",
+          bgColor: "bg-white",
+          textColor: "text-black",
+          borderColor: "border-gray-300",
+          isJoker: true,
         };
       default:
         return {
@@ -70,6 +72,7 @@ const Card: React.FC<CardProps> = ({
           bgColor: "bg-white",
           textColor: "text-black",
           borderColor: "border-gray-300",
+          isJoker: false,
         };
     }
   };
@@ -79,7 +82,7 @@ const Card: React.FC<CardProps> = ({
   return (
     <div
       className={`
-        relative w-12 h-16 rounded-lg border-2 shadow-md cursor-pointer
+        relative w-16 h-20 rounded-lg border-2 shadow-md cursor-pointer
         transition-all duration-200 hover:shadow-lg hover:scale-105
         ${cardStyle.bgColor}
         ${cardStyle.textColor}
@@ -95,7 +98,17 @@ const Card: React.FC<CardProps> = ({
     >
       {/* 左上角点数 */}
       <div className="absolute top-0.5 left-0.5 text-xs font-bold leading-none">
-        {cardStyle.text}
+        {cardStyle.isJoker ? (
+          <div className="flex flex-col items-center">
+            {cardStyle.text.split("").map((letter, index) => (
+              <span key={index} className="leading-none">
+                {letter}
+              </span>
+            ))}
+          </div>
+        ) : (
+          cardStyle.text
+        )}
       </div>
     </div>
   );
