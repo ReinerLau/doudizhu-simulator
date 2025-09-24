@@ -65,14 +65,12 @@ function App() {
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           {/* 搜索框 */}
-          <div className="flex-1 max-w-md">
-            <Input.Search
+          <div className="flex-1">
+            <Input
               placeholder="搜索对局标题..."
               size="large"
-              className="w-full"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              prefix={<span className="i-mdi-magnify text-gray-400"></span>}
             />
           </div>
 
