@@ -141,9 +141,9 @@ function GamePage() {
               <div className="text-center mb-4">
                 <h3 className="text-xl font-semibold text-red-600">地主</h3>
                 {/* 手牌展示 */}
-                <div className="flex flex-wrap gap-1 justify-center mb-3 max-h-40 overflow-y-auto">
+                <div className="flex flex-wrap gap-1 justify-center mb-3 max-h-40 pt-2">
                   {currentGame?.cards.landlord.map((cardValue, index) => (
-                    <Card key={index} value={cardValue} className="scale-90" />
+                    <Card key={index} value={cardValue} />
                   ))}
                 </div>
               </div>
