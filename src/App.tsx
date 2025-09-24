@@ -1,5 +1,6 @@
 import { Button, Input, Card, Upload, Dropdown, Space } from "antd";
 import type { MenuProps } from "antd";
+import { useState, useMemo } from "react";
 
 // 模拟对局数据
 const mockGames = [
@@ -12,8 +13,21 @@ const mockGames = [
 ];
 
 function App() {
+  // 搜索关键词状态
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  // 筛选后的对局列表
+  const filteredGames = useMemo(() => {
+    if (!searchKeyword.trim()) {
+      return mockGames;
+    }
+    return mockGames.filter((game) =>
+      game.title.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+  }, [searchKeyword]);
+
   // 右键菜单配置
-  const getContextMenu = (gameId: number): MenuProps => ({
+  const getContextMenu = (): MenuProps => ({
     items: [
       {
         key: "edit",
@@ -53,9 +67,11 @@ function App() {
           {/* 搜索框 */}
           <div className="flex-1 max-w-md">
             <Input.Search
-              placeholder="搜索残局标题..."
+              placeholder="搜索对局标题..."
               size="large"
               className="w-full"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
               prefix={<span className="i-mdi-magnify text-gray-400"></span>}
             />
           </div>
@@ -95,10 +111,10 @@ function App() {
 
       {/* 对局卡片网格 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {mockGames.map((game) => (
+        {filteredGames.map((game) => (
           <Dropdown
             key={game.id}
-            menu={getContextMenu(game.id)}
+            menu={getContextMenu()}
             trigger={["contextMenu"]}
           >
             <Card
@@ -116,18 +132,26 @@ function App() {
       </div>
 
       {/* 空状态提示 */}
-      {mockGames.length === 0 && (
+      {filteredGames.length === 0 && (
         <div className="text-center py-16">
-          <div className="i-mdi-cards-outline text-6xl text-gray-300 mb-4"></div>
-          <h3 className="text-xl text-gray-500 mb-2">暂无对局</h3>
-          <p className="text-gray-400 mb-6">开始创建你的第一个残局吧</p>
-          <Button
-            type="primary"
-            size="large"
-            icon={<span className="i-mdi-plus text-base"></span>}
-          >
-            添加对局
-          </Button>
+          {searchKeyword ? (
+            <>
+              <h3 className="text-xl text-gray-500 mb-2">未找到相关对局</h3>
+              <p className="text-gray-400 mb-6">尝试使用其他关键词搜索</p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-xl text-gray-500 mb-2">暂无对局</h3>
+              <p className="text-gray-400 mb-6">开始创建你的第一个残局吧</p>
+              <Button
+                type="primary"
+                size="large"
+                icon={<span className="i-mdi-plus text-base"></span>}
+              >
+                添加对局
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
