@@ -42,10 +42,32 @@ function GamePage() {
     farmer2: [],
   });
 
+  /** 游戏是否已结束 */
+  const [isGameEnded, setIsGameEnded] = useState<boolean>(false);
+
+  /**
+   * 检查游戏是否结束
+   * @param cards - 当前手牌状态
+   * @returns 获胜玩家，如果游戏未结束则返回null
+   */
+  const checkGameEnd = (cards: PlayerCards): PlayerType | null => {
+    // 检查每个玩家的手牌数量
+    if (cards.landlord.length === 0) return "landlord";
+    if (cards.farmer1.length === 0) return "farmer1";
+    if (cards.farmer2.length === 0) return "farmer2";
+    return null;
+  };
+
   /**
    * 切换到下一个玩家
+   * 如果游戏已结束（任意玩家手牌数量为0），则不进行切换
    */
   const switchToNextPlayer = () => {
+    // 检查游戏是否已结束，如果已结束则不切换玩家
+    if (isGameEnded) {
+      return;
+    }
+
     const currentIndex = playerOrder.indexOf(currentPlayer);
     const nextIndex = (currentIndex + 1) % playerOrder.length;
     setCurrentPlayer(playerOrder[nextIndex]);
@@ -69,6 +91,24 @@ function GamePage() {
   }, [gameId, currentGame]);
 
   /**
+   * 监听手牌变化，检查游戏是否结束
+   */
+  useEffect(() => {
+    // 只在手牌状态有效时检查游戏结束
+    if (
+      currentCards.landlord.length > 0 ||
+      currentCards.farmer1.length > 0 ||
+      currentCards.farmer2.length > 0
+    ) {
+      const gameWinner = checkGameEnd(currentCards);
+      if (gameWinner && !isGameEnded) {
+        setIsGameEnded(true);
+        console.log(`游戏结束！获胜者: ${gameWinner}`);
+      }
+    }
+  }, [currentCards, isGameEnded]);
+
+  /**
    * 返回首页
    */
   const handleGoBack = () => {
@@ -80,6 +120,12 @@ function GamePage() {
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
   const handlePass = (player: PlayerType) => {
+    // 检查游戏是否已结束
+    if (isGameEnded) {
+      console.log(`游戏已结束，无法进行过牌操作`);
+      return;
+    }
+
     // 检查是否轮到该玩家
     if (player !== currentPlayer) {
       console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
@@ -96,6 +142,12 @@ function GamePage() {
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
   const handlePlayCards = (player: PlayerType) => {
+    // 检查游戏是否已结束
+    if (isGameEnded) {
+      console.log(`游戏已结束，无法进行出牌操作`);
+      return;
+    }
+
     // 检查是否轮到该玩家
     if (player !== currentPlayer) {
       console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
@@ -121,13 +173,23 @@ function GamePage() {
     );
 
     // 更新手牌状态
-    setCurrentCards((prevCards) => ({
-      ...prevCards,
+    const newCards = {
+      ...currentCards,
       [player]: newPlayerCards,
-    }));
+    };
+    setCurrentCards(newCards);
 
-    // 切换到下一个玩家（会自动清空选中的牌）
-    switchToNextPlayer();
+    // 检查游戏是否结束
+    const gameWinner = checkGameEnd(newCards);
+    if (gameWinner) {
+      setIsGameEnded(true);
+      console.log(`游戏结束！获胜者: ${gameWinner}`);
+      // 清空选中的牌，但不切换到下一个玩家
+      setSelectedCards([]);
+    } else {
+      // 切换到下一个玩家（会自动清空选中的牌）
+      switchToNextPlayer();
+    }
   };
 
   return (
@@ -164,7 +226,7 @@ function GamePage() {
               disabled={currentPlayer !== "landlord"}
               onSelectionChange={setSelectedCards}
             />
-            {currentPlayer === "landlord" && (
+            {currentPlayer === "landlord" && !isGameEnded && (
               <div className="flex gap-2">
                 <Button
                   className="flex-1"
@@ -198,7 +260,7 @@ function GamePage() {
               disabled={currentPlayer !== "farmer1"}
               onSelectionChange={setSelectedCards}
             />
-            {currentPlayer === "farmer1" && (
+            {currentPlayer === "farmer1" && !isGameEnded && (
               <div className="flex gap-2">
                 <Button
                   className="flex-1"
@@ -232,7 +294,7 @@ function GamePage() {
               disabled={currentPlayer !== "farmer2"}
               onSelectionChange={setSelectedCards}
             />
-            {currentPlayer === "farmer2" && (
+            {currentPlayer === "farmer2" && !isGameEnded && (
               <div className="flex gap-2">
                 <Button
                   className="flex-1"
