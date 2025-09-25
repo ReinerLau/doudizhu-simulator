@@ -1,5 +1,6 @@
 import { Button, Divider } from "antd";
 import { useNavigate, useParams } from "react-router";
+import { useState } from "react";
 import { mockGames } from "../data/mockGames";
 import HandCards from "../components/HandCards";
 
@@ -16,6 +17,19 @@ function GamePage() {
    */
   const currentGame = mockGames.find((game) => game.id === Number(gameId));
 
+  /** 地主选中的牌索引 */
+  const [landlordSelectedCards, setLandlordSelectedCards] = useState<number[]>(
+    []
+  );
+  /** 下家选中的牌索引 */
+  const [farmer1SelectedCards, setFarmer1SelectedCards] = useState<number[]>(
+    []
+  );
+  /** 顶家选中的牌索引 */
+  const [farmer2SelectedCards, setFarmer2SelectedCards] = useState<number[]>(
+    []
+  );
+
   /**
    * 返回首页
    */
@@ -29,6 +43,10 @@ function GamePage() {
    */
   const handlePass = (player: string) => {
     console.log(`${player} 过牌`);
+    // 过牌后清空选中的牌
+    if (player === "landlord") setLandlordSelectedCards([]);
+    if (player === "farmer1") setFarmer1SelectedCards([]);
+    if (player === "farmer2") setFarmer2SelectedCards([]);
   };
 
   /**
@@ -36,7 +54,26 @@ function GamePage() {
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
   const handlePlayCards = (player: string) => {
-    console.log(`${player} 出牌`);
+    let selectedCards: number[] = [];
+    if (player === "landlord") selectedCards = landlordSelectedCards;
+    if (player === "farmer1") selectedCards = farmer1SelectedCards;
+    if (player === "farmer2") selectedCards = farmer2SelectedCards;
+
+    if (selectedCards.length === 0) {
+      console.log(`${player} 没有选中任何牌`);
+      return;
+    }
+
+    const playerCards =
+      currentGame?.cards[player as keyof typeof currentGame.cards] || [];
+    const selectedCardValues = selectedCards.map((index) => playerCards[index]);
+
+    console.log(`${player} 出牌:`, selectedCardValues);
+
+    // 出牌后清空选中的牌
+    if (player === "landlord") setLandlordSelectedCards([]);
+    if (player === "farmer1") setFarmer1SelectedCards([]);
+    if (player === "farmer2") setFarmer2SelectedCards([]);
   };
 
   return (
@@ -59,7 +96,10 @@ function GamePage() {
               地主
             </div>
             {/* 手牌展示 */}
-            <HandCards cards={currentGame?.cards.landlord || []} />
+            <HandCards
+              cards={currentGame?.cards.landlord || []}
+              onSelectionChange={setLandlordSelectedCards}
+            />
             <div className="flex gap-2">
               <Button className="flex-1" onClick={() => handlePass("landlord")}>
                 过牌
@@ -79,7 +119,10 @@ function GamePage() {
               下家
             </div>
             {/* 手牌展示 */}
-            <HandCards cards={currentGame?.cards.farmer1 || []} />
+            <HandCards
+              cards={currentGame?.cards.farmer1 || []}
+              onSelectionChange={setFarmer1SelectedCards}
+            />
             <div className="flex gap-2">
               <Button className="flex-1" onClick={() => handlePass("farmer1")}>
                 过牌
@@ -99,7 +142,10 @@ function GamePage() {
               顶家
             </div>
             {/* 手牌展示 */}
-            <HandCards cards={currentGame?.cards.farmer2 || []} />
+            <HandCards
+              cards={currentGame?.cards.farmer2 || []}
+              onSelectionChange={setFarmer2SelectedCards}
+            />
             <div className="flex gap-2">
               <Button className="flex-1" onClick={() => handlePass("farmer2")}>
                 过牌

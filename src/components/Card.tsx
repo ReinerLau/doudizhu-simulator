@@ -41,9 +41,15 @@ const Card: React.FC<CardProps> = ({ value, selected = false, onClick }) => {
   return (
     <div
       className={`
-        w-full aspect-square rounded border-1 shadow cursor-pointer flex items-center justify-center bg-white border-gray-300 font-bold hover:bg-gray-100
-        ${selected ? "" : ""}
-        ${value === "D" ? "text-red-500" : "text-black"}
+        w-full aspect-square rounded border-1 shadow cursor-pointer flex items-center justify-center font-bold transition-all duration-200
+        ${
+          selected
+            ? "bg-blue-500 text-white border-blue-600 transform -translate-y-2 shadow-lg"
+            : "bg-white border-gray-300 hover:bg-gray-100"
+        }
+        ${value === "D" && !selected ? "text-red-500" : ""}
+        ${value === "X" && !selected ? "text-red-500" : ""}
+        ${!selected && value !== "D" && value !== "X" ? "text-black" : ""}
       `}
       onClick={onClick}
     >
