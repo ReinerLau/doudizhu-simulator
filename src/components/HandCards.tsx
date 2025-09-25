@@ -1,4 +1,5 @@
 import React from "react";
+import { Row, Col } from "antd";
 import Card, { type CardValue } from "./Card";
 
 /**
@@ -11,15 +12,17 @@ interface HandCardsProps {
 
 /**
  * 手牌展示组件
- * 以叠放方式展示玩家手牌，牌与牌之间重叠，只露出点数部分
+ * 使用网格布局展示玩家手牌
  */
 const HandCards: React.FC<HandCardsProps> = ({ cards }) => {
   return (
-    <div className={`flex justify-center ml-11`}>
+    <Row gutter={[8, 8]}>
       {cards.map((cardValue, index) => (
-        <Card key={index} value={cardValue} className="-ml-11" />
+        <Col key={index} span={2}>
+          <Card value={cardValue} />
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 };
 
