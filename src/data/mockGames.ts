@@ -1,5 +1,8 @@
 import type { CardValue } from "../components/Card";
 
+/** 玩家类型定义 */
+export type PlayerType = "landlord" | "farmer1" | "farmer2";
+
 /**
  * 玩家手牌数据
  */
@@ -22,6 +25,8 @@ export interface Game {
   title: string;
   /** 玩家手牌 */
   cards: PlayerCards;
+  /** 首发玩家 */
+  firstPlayer: PlayerType;
 }
 
 /**
@@ -31,6 +36,7 @@ export const mockGames: Game[] = [
   {
     id: 1,
     title: "经典残局 - 春天",
+    firstPlayer: "landlord",
     cards: {
       landlord: [
         "D",
@@ -97,6 +103,7 @@ export const mockGames: Game[] = [
   {
     id: 2,
     title: "高级残局 - 反春",
+    firstPlayer: "farmer1",
     cards: {
       landlord: [
         "D",
@@ -163,6 +170,7 @@ export const mockGames: Game[] = [
   {
     id: 3,
     title: "入门残局 - 基础出牌",
+    firstPlayer: "farmer2",
     cards: {
       landlord: [
         "2",
@@ -229,6 +237,7 @@ export const mockGames: Game[] = [
   {
     id: 4,
     title: "困难残局 - 炸弹连环",
+    firstPlayer: "landlord",
     cards: {
       landlord: [
         "D",
@@ -295,6 +304,7 @@ export const mockGames: Game[] = [
   {
     id: 5,
     title: "中级残局 - 顺子组合",
+    firstPlayer: "farmer1",
     cards: {
       landlord: [
         "2",
@@ -361,6 +371,7 @@ export const mockGames: Game[] = [
   {
     id: 6,
     title: "专家残局 - 王炸决胜",
+    firstPlayer: "farmer2",
     cards: {
       landlord: [
         "D",

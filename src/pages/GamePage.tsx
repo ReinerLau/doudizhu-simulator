@@ -1,8 +1,11 @@
 import { Button, Divider } from "antd";
 import { useNavigate, useParams } from "react-router";
-import { useState } from "react";
-import { mockGames } from "../data/mockGames";
+import { useState, useEffect } from "react";
+import { mockGames, type PlayerType } from "../data/mockGames";
 import HandCards from "../components/HandCards";
+
+/** 玩家出牌顺序 */
+const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];
 
 /**
  * 对局页面组件 - 正常模式
@@ -30,6 +33,41 @@ function GamePage() {
     []
   );
 
+  /** 当前轮到的玩家 */
+  const [currentPlayer, setCurrentPlayer] = useState<PlayerType>("landlord");
+
+  /**
+   * 切换到下一个玩家
+   */
+  const switchToNextPlayer = () => {
+    const currentIndex = playerOrder.indexOf(currentPlayer);
+    const nextIndex = (currentIndex + 1) % playerOrder.length;
+    setCurrentPlayer(playerOrder[nextIndex]);
+  };
+
+  /**
+   * 获取玩家的中文名称
+   * @param player - 玩家类型
+   * @returns 玩家的中文名称
+   */
+  const getPlayerName = (player: PlayerType): string => {
+    const nameMap = {
+      landlord: "地主",
+      farmer1: "下家",
+      farmer2: "顶家",
+    };
+    return nameMap[player];
+  };
+
+  /**
+   * 根据对局数据设置首发玩家
+   */
+  useEffect(() => {
+    if (currentGame) {
+      setCurrentPlayer(currentGame.firstPlayer);
+    }
+  }, [gameId, currentGame]);
+
   /**
    * 返回首页
    */
@@ -41,19 +79,34 @@ function GamePage() {
    * 处理过牌操作
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
-  const handlePass = (player: string) => {
+  const handlePass = (player: PlayerType) => {
+    // 检查是否轮到该玩家
+    if (player !== currentPlayer) {
+      console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
+      return;
+    }
+
     console.log(`${player} 过牌`);
     // 过牌后清空选中的牌
     if (player === "landlord") setLandlordSelectedCards([]);
     if (player === "farmer1") setFarmer1SelectedCards([]);
     if (player === "farmer2") setFarmer2SelectedCards([]);
+
+    // 切换到下一个玩家
+    switchToNextPlayer();
   };
 
   /**
    * 处理出牌操作
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
-  const handlePlayCards = (player: string) => {
+  const handlePlayCards = (player: PlayerType) => {
+    // 检查是否轮到该玩家
+    if (player !== currentPlayer) {
+      console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
+      return;
+    }
+
     let selectedCards: number[] = [];
     if (player === "landlord") selectedCards = landlordSelectedCards;
     if (player === "farmer1") selectedCards = farmer1SelectedCards;
@@ -74,6 +127,9 @@ function GamePage() {
     if (player === "landlord") setLandlordSelectedCards([]);
     if (player === "farmer1") setFarmer1SelectedCards([]);
     if (player === "farmer2") setFarmer2SelectedCards([]);
+
+    // 切换到下一个玩家
+    switchToNextPlayer();
   };
 
   return (
@@ -82,8 +138,16 @@ function GamePage() {
       <div className="bg-white shadow-sm p-4">
         <div className="flex items-center justify-between">
           <Button onClick={handleGoBack}>返回</Button>
-          {/* 对局名称 */}
-          <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
+          <div className="flex flex-col items-center">
+            {/* 对局名称 */}
+            <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
+            {/* 当前轮到的玩家 */}
+            <div className="text-sm text-blue-600 mt-1">
+              当前轮到:{" "}
+              <span className="font-bold">{getPlayerName(currentPlayer)}</span>
+            </div>
+          </div>
+          <div></div> {/* 占位元素，保持对称布局 */}
         </div>
       </div>
 
@@ -92,72 +156,114 @@ function GamePage() {
         <div className="flex flex-col justify-between gap-4 lg:w-screen-xl">
           {/* 地主 */}
           <div className="flex flex-col gap-4">
-            <div className=" text-center bg-white rounded-lg shadow p-1 font-bold">
-              地主
+            <div
+              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
+                currentPlayer === "landlord"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+            >
+              地主{" "}
+              {currentPlayer === "landlord" && (
+                <span className="text-blue-600">（轮到你了）</span>
+              )}
             </div>
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.landlord || []}
               onSelectionChange={setLandlordSelectedCards}
             />
-            <div className="flex gap-2">
-              <Button className="flex-1" onClick={() => handlePass("landlord")}>
-                过牌
-              </Button>
-              <Button
-                className="flex-1"
-                type="primary"
-                onClick={() => handlePlayCards("landlord")}
-              >
-                出牌
-              </Button>
-            </div>
+            {currentPlayer === "landlord" && (
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  onClick={() => handlePass("landlord")}
+                >
+                  过牌
+                </Button>
+                <Button
+                  className="flex-1"
+                  type="primary"
+                  onClick={() => handlePlayCards("landlord")}
+                >
+                  出牌
+                </Button>
+              </div>
+            )}
           </div>
           {/* 下家 */}
-          <div className=" flex flex-col gap-4">
-            <div className="text-center bg-white rounded-lg shadow p-1 font-bold">
-              下家
+          <div className="flex flex-col gap-4">
+            <div
+              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
+                currentPlayer === "farmer1"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+            >
+              下家{" "}
+              {currentPlayer === "farmer1" && (
+                <span className="text-blue-600">（轮到你了）</span>
+              )}
             </div>
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer1 || []}
               onSelectionChange={setFarmer1SelectedCards}
             />
-            <div className="flex gap-2">
-              <Button className="flex-1" onClick={() => handlePass("farmer1")}>
-                过牌
-              </Button>
-              <Button
-                className="flex-1"
-                type="primary"
-                onClick={() => handlePlayCards("farmer1")}
-              >
-                出牌
-              </Button>
-            </div>
+            {currentPlayer === "farmer1" && (
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  onClick={() => handlePass("farmer1")}
+                >
+                  过牌
+                </Button>
+                <Button
+                  className="flex-1"
+                  type="primary"
+                  onClick={() => handlePlayCards("farmer1")}
+                >
+                  出牌
+                </Button>
+              </div>
+            )}
           </div>
           {/* 顶家 */}
-          <div className=" flex flex-col gap-4">
-            <div className="text-center bg-white rounded-lg shadow p-1 font-bold">
-              顶家
+          <div className="flex flex-col gap-4">
+            <div
+              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
+                currentPlayer === "farmer2"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+            >
+              顶家{" "}
+              {currentPlayer === "farmer2" && (
+                <span className="text-blue-600">（轮到你了）</span>
+              )}
             </div>
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer2 || []}
               onSelectionChange={setFarmer2SelectedCards}
             />
-            <div className="flex gap-2">
-              <Button className="flex-1" onClick={() => handlePass("farmer2")}>
-                过牌
-              </Button>
-              <Button
-                className="flex-1"
-                type="primary"
-                onClick={() => handlePlayCards("farmer2")}
-              >
-                出牌
-              </Button>
-            </div>
+            {currentPlayer === "farmer2" && (
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  onClick={() => handlePass("farmer2")}
+                >
+                  过牌
+                </Button>
+                <Button
+                  className="flex-1"
+                  type="primary"
+                  onClick={() => handlePlayCards("farmer2")}
+                >
+                  出牌
+                </Button>
+              </div>
+            )}
           </div>
         </div>
         <Divider type="vertical" className="hidden !lg:block h-full" />
