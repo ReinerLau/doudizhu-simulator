@@ -1,4 +1,4 @@
-import { Button, Divider } from "antd";
+import { Button } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { mockGames } from "../data/mockGames";
 import HandCards from "../components/HandCards";
@@ -51,8 +51,8 @@ function GamePage() {
       </div>
 
       {/* 对局区域 */}
-      <div className="flex-1 p-6 flex flex-col">
-        <div>
+      <div className="flex-1 p-6 flex flex-col !lg:flex-row">
+        <div className="flex flex-col justify-between gap-4">
           {/* 地主 */}
           <div className="flex flex-col gap-4">
             <div className=" text-center bg-white rounded-lg shadow p-1 font-bold">
@@ -73,28 +73,6 @@ function GamePage() {
               </Button>
             </div>
           </div>
-          <Divider />
-          {/* 顶家 */}
-          <div className=" flex flex-col gap-4">
-            <div className="text-center bg-white rounded-lg shadow p-1 font-bold">
-              顶家
-            </div>
-            {/* 手牌展示 */}
-            <HandCards cards={currentGame?.cards.farmer2 || []} />
-            <div className="flex gap-2">
-              <Button className="flex-1" onClick={() => handlePass("farmer2")}>
-                过牌
-              </Button>
-              <Button
-                className="flex-1"
-                type="primary"
-                onClick={() => handlePlayCards("farmer2")}
-              >
-                出牌
-              </Button>
-            </div>
-          </div>
-          <Divider />
           {/* 下家 */}
           <div className=" flex flex-col gap-4">
             <div className="text-center bg-white rounded-lg shadow p-1 font-bold">
@@ -115,7 +93,26 @@ function GamePage() {
               </Button>
             </div>
           </div>
-          <Divider />
+          {/* 顶家 */}
+          <div className=" flex flex-col gap-4">
+            <div className="text-center bg-white rounded-lg shadow p-1 font-bold">
+              顶家
+            </div>
+            {/* 手牌展示 */}
+            <HandCards cards={currentGame?.cards.farmer2 || []} />
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={() => handlePass("farmer2")}>
+                过牌
+              </Button>
+              <Button
+                className="flex-1"
+                type="primary"
+                onClick={() => handlePlayCards("farmer2")}
+              >
+                出牌
+              </Button>
+            </div>
+          </div>
         </div>
         {/* 牌堆 */}
         <div className="flex-1"></div>
