@@ -20,18 +20,8 @@ function GamePage() {
    */
   const currentGame = mockGames.find((game) => game.id === Number(gameId));
 
-  /** 地主选中的牌索引 */
-  const [landlordSelectedCards, setLandlordSelectedCards] = useState<number[]>(
-    []
-  );
-  /** 下家选中的牌索引 */
-  const [farmer1SelectedCards, setFarmer1SelectedCards] = useState<number[]>(
-    []
-  );
-  /** 顶家选中的牌索引 */
-  const [farmer2SelectedCards, setFarmer2SelectedCards] = useState<number[]>(
-    []
-  );
+  /** 当前玩家选中的牌索引 */
+  const [selectedCards, setSelectedCards] = useState<number[]>([]);
 
   /** 当前轮到的玩家 */
   const [currentPlayer, setCurrentPlayer] = useState<PlayerType>("landlord");
@@ -43,6 +33,8 @@ function GamePage() {
     const currentIndex = playerOrder.indexOf(currentPlayer);
     const nextIndex = (currentIndex + 1) % playerOrder.length;
     setCurrentPlayer(playerOrder[nextIndex]);
+    // 切换玩家时清空选中的牌
+    setSelectedCards([]);
   };
 
   /**
@@ -73,12 +65,7 @@ function GamePage() {
     }
 
     console.log(`${player} 过牌`);
-    // 过牌后清空选中的牌
-    if (player === "landlord") setLandlordSelectedCards([]);
-    if (player === "farmer1") setFarmer1SelectedCards([]);
-    if (player === "farmer2") setFarmer2SelectedCards([]);
-
-    // 切换到下一个玩家
+    // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
   };
 
@@ -93,11 +80,6 @@ function GamePage() {
       return;
     }
 
-    let selectedCards: number[] = [];
-    if (player === "landlord") selectedCards = landlordSelectedCards;
-    if (player === "farmer1") selectedCards = farmer1SelectedCards;
-    if (player === "farmer2") selectedCards = farmer2SelectedCards;
-
     if (selectedCards.length === 0) {
       console.log(`${player} 没有选中任何牌`);
       return;
@@ -109,12 +91,7 @@ function GamePage() {
 
     console.log(`${player} 出牌:`, selectedCardValues);
 
-    // 出牌后清空选中的牌
-    if (player === "landlord") setLandlordSelectedCards([]);
-    if (player === "farmer1") setFarmer1SelectedCards([]);
-    if (player === "farmer2") setFarmer2SelectedCards([]);
-
-    // 切换到下一个玩家
+    // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
   };
 
@@ -146,9 +123,11 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.landlord || []}
-              selectedIndexes={landlordSelectedCards}
+              selectedIndexes={
+                currentPlayer === "landlord" ? selectedCards : []
+              }
               disabled={currentPlayer !== "landlord"}
-              onSelectionChange={setLandlordSelectedCards}
+              onSelectionChange={setSelectedCards}
             />
             {currentPlayer === "landlord" && (
               <div className="flex gap-2">
@@ -180,9 +159,9 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer1 || []}
-              selectedIndexes={farmer1SelectedCards}
+              selectedIndexes={currentPlayer === "farmer1" ? selectedCards : []}
               disabled={currentPlayer !== "farmer1"}
-              onSelectionChange={setFarmer1SelectedCards}
+              onSelectionChange={setSelectedCards}
             />
             {currentPlayer === "farmer1" && (
               <div className="flex gap-2">
@@ -214,9 +193,9 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer2 || []}
-              selectedIndexes={farmer2SelectedCards}
+              selectedIndexes={currentPlayer === "farmer2" ? selectedCards : []}
               disabled={currentPlayer !== "farmer2"}
-              onSelectionChange={setFarmer2SelectedCards}
+              onSelectionChange={setSelectedCards}
             />
             {currentPlayer === "farmer2" && (
               <div className="flex gap-2">
