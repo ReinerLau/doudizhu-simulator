@@ -1,7 +1,11 @@
 import { Button } from "antd";
 import { useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
-import { mockGames, type PlayerType } from "../data/mockGames";
+import {
+  mockGames,
+  type PlayerType,
+  type PlayerCards,
+} from "../data/mockGames";
 import HandCards from "../components/HandCards";
 import PlayedCards from "../components/PlayedCards";
 import { type CardValue } from "../components/Card";
@@ -31,6 +35,13 @@ function GamePage() {
   /** 牌堆中的牌（最近一次出牌） */
   const [playedCards, setPlayedCards] = useState<CardValue[]>([]);
 
+  /** 当前对局的手牌状态（可变） */
+  const [currentCards, setCurrentCards] = useState<PlayerCards>({
+    landlord: [],
+    farmer1: [],
+    farmer2: [],
+  });
+
   /**
    * 切换到下一个玩家
    */
@@ -43,11 +54,17 @@ function GamePage() {
   };
 
   /**
-   * 根据对局数据设置首发玩家
+   * 根据对局数据设置首发玩家和初始手牌
    */
   useEffect(() => {
     if (currentGame) {
       setCurrentPlayer(currentGame.firstPlayer);
+      // 初始化手牌状态，深拷贝避免修改原始数据
+      setCurrentCards({
+        landlord: [...currentGame.cards.landlord],
+        farmer1: [...currentGame.cards.farmer1],
+        farmer2: [...currentGame.cards.farmer2],
+      });
     }
   }, [gameId, currentGame]);
 
@@ -90,14 +107,24 @@ function GamePage() {
       return;
     }
 
-    const playerCards =
-      currentGame?.cards[player as keyof typeof currentGame.cards] || [];
+    const playerCards = currentCards[player];
     const selectedCardValues = selectedCards.map((index) => playerCards[index]);
 
     console.log(`${player} 出牌:`, selectedCardValues);
 
     // 将选中的牌显示在牌堆中（覆盖之前的牌）
     setPlayedCards(selectedCardValues);
+
+    // 从玩家手牌中移除已出的牌
+    const newPlayerCards = playerCards.filter(
+      (_, index) => !selectedCards.includes(index)
+    );
+
+    // 更新手牌状态
+    setCurrentCards((prevCards) => ({
+      ...prevCards,
+      [player]: newPlayerCards,
+    }));
 
     // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
@@ -130,7 +157,7 @@ function GamePage() {
             </div>
             {/* 手牌展示 */}
             <HandCards
-              cards={currentGame?.cards.landlord || []}
+              cards={currentCards.landlord}
               selectedIndexes={
                 currentPlayer === "landlord" ? selectedCards : []
               }
@@ -166,7 +193,7 @@ function GamePage() {
             </div>
             {/* 手牌展示 */}
             <HandCards
-              cards={currentGame?.cards.farmer1 || []}
+              cards={currentCards.farmer1}
               selectedIndexes={currentPlayer === "farmer1" ? selectedCards : []}
               disabled={currentPlayer !== "farmer1"}
               onSelectionChange={setSelectedCards}
@@ -200,7 +227,7 @@ function GamePage() {
             </div>
             {/* 手牌展示 */}
             <HandCards
-              cards={currentGame?.cards.farmer2 || []}
+              cards={currentCards.farmer2}
               selectedIndexes={currentPlayer === "farmer2" ? selectedCards : []}
               disabled={currentPlayer !== "farmer2"}
               onSelectionChange={setSelectedCards}
