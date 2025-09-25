@@ -46,20 +46,6 @@ function GamePage() {
   };
 
   /**
-   * 获取玩家的中文名称
-   * @param player - 玩家类型
-   * @returns 玩家的中文名称
-   */
-  const getPlayerName = (player: PlayerType): string => {
-    const nameMap = {
-      landlord: "地主",
-      farmer1: "下家",
-      farmer2: "顶家",
-    };
-    return nameMap[player];
-  };
-
-  /**
    * 根据对局数据设置首发玩家
    */
   useEffect(() => {
@@ -141,13 +127,7 @@ function GamePage() {
           <div className="flex flex-col items-center">
             {/* 对局名称 */}
             <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
-            {/* 当前轮到的玩家 */}
-            <div className="text-sm text-blue-600 mt-1">
-              当前轮到:{" "}
-              <span className="font-bold">{getPlayerName(currentPlayer)}</span>
-            </div>
           </div>
-          <div></div> {/* 占位元素，保持对称布局 */}
         </div>
       </div>
 
@@ -158,15 +138,10 @@ function GamePage() {
           <div className="flex flex-col gap-4">
             <div
               className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "landlord"
-                  ? "ring-2 ring-blue-500 bg-blue-50"
-                  : ""
+                currentPlayer === "landlord" ? "ring-2 ring-blue-500" : ""
               }`}
             >
-              地主{" "}
-              {currentPlayer === "landlord" && (
-                <span className="text-blue-600">（轮到你了）</span>
-              )}
+              地主
             </div>
             {/* 手牌展示 */}
             <HandCards
@@ -195,15 +170,10 @@ function GamePage() {
           <div className="flex flex-col gap-4">
             <div
               className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "farmer1"
-                  ? "ring-2 ring-blue-500 bg-blue-50"
-                  : ""
+                currentPlayer === "farmer1" ? "ring-2 ring-blue-500" : ""
               }`}
             >
-              下家{" "}
-              {currentPlayer === "farmer1" && (
-                <span className="text-blue-600">（轮到你了）</span>
-              )}
+              下家
             </div>
             {/* 手牌展示 */}
             <HandCards
@@ -232,15 +202,10 @@ function GamePage() {
           <div className="flex flex-col gap-4">
             <div
               className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "farmer2"
-                  ? "ring-2 ring-blue-500 bg-blue-50"
-                  : ""
+                currentPlayer === "farmer2" ? "ring-2 ring-blue-500" : ""
               }`}
             >
-              顶家{" "}
-              {currentPlayer === "farmer2" && (
-                <span className="text-blue-600">（轮到你了）</span>
-              )}
+              顶家
             </div>
             {/* 手牌展示 */}
             <HandCards
