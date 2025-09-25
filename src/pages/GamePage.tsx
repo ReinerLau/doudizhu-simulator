@@ -116,6 +116,29 @@ function GamePage() {
   };
 
   /**
+   * 重来功能 - 重置对局到初始状态
+   */
+  const handleRestart = () => {
+    if (currentGame) {
+      // 重置手牌状态为初始状态
+      setCurrentCards({
+        landlord: [...currentGame.cards.landlord],
+        farmer1: [...currentGame.cards.farmer1],
+        farmer2: [...currentGame.cards.farmer2],
+      });
+      // 重置当前玩家为首发玩家
+      setCurrentPlayer(currentGame.firstPlayer);
+      // 清空选中的牌
+      setSelectedCards([]);
+      // 清空牌堆
+      setPlayedCards([]);
+      // 重置游戏结束状态
+      setIsGameEnded(false);
+      console.log("对局已重置到初始状态");
+    }
+  };
+
+  /**
    * 处理过牌操作
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
@@ -202,6 +225,7 @@ function GamePage() {
             {/* 对局名称 */}
             <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
           </div>
+          <Button onClick={handleRestart}>重来</Button>
         </div>
       </div>
 
