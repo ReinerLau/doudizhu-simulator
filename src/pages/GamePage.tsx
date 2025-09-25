@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { mockGames, type PlayerType } from "../data/mockGames";
 import HandCards from "../components/HandCards";
+import PlayedCards from "../components/PlayedCards";
+import { type CardValue } from "../components/Card";
 
 /** 玩家出牌顺序 */
 const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];
@@ -25,6 +27,15 @@ function GamePage() {
 
   /** 当前轮到的玩家 */
   const [currentPlayer, setCurrentPlayer] = useState<PlayerType>("landlord");
+
+  /** 牌堆中的牌（最近一次出牌） */
+  const [playedCards, setPlayedCards] = useState<
+    | {
+        player: PlayerType;
+        cards: CardValue[];
+      }
+    | undefined
+  >(undefined);
 
   /**
    * 切换到下一个玩家
@@ -90,6 +101,12 @@ function GamePage() {
     const selectedCardValues = selectedCards.map((index) => playerCards[index]);
 
     console.log(`${player} 出牌:`, selectedCardValues);
+
+    // 将选中的牌显示在牌堆中（覆盖之前的牌）
+    setPlayedCards({
+      player: player,
+      cards: selectedCardValues,
+    });
 
     // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
@@ -218,7 +235,9 @@ function GamePage() {
         </div>
         <Divider type="vertical" className="hidden !lg:block h-full" />
         {/* 牌堆 */}
-        <div className="flex-1"></div>
+        <div className="flex-1 lg:max-w-md">
+          <PlayedCards playedCards={playedCards} />
+        </div>
       </div>
     </div>
   );
