@@ -147,6 +147,7 @@ function GamePage() {
             <HandCards
               cards={currentGame?.cards.landlord || []}
               selectedIndexes={landlordSelectedCards}
+              disabled={currentPlayer !== "landlord"}
               onSelectionChange={setLandlordSelectedCards}
             />
             {currentPlayer === "landlord" && (
@@ -180,6 +181,7 @@ function GamePage() {
             <HandCards
               cards={currentGame?.cards.farmer1 || []}
               selectedIndexes={farmer1SelectedCards}
+              disabled={currentPlayer !== "farmer1"}
               onSelectionChange={setFarmer1SelectedCards}
             />
             {currentPlayer === "farmer1" && (
@@ -213,6 +215,7 @@ function GamePage() {
             <HandCards
               cards={currentGame?.cards.farmer2 || []}
               selectedIndexes={farmer2SelectedCards}
+              disabled={currentPlayer !== "farmer2"}
               onSelectionChange={setFarmer2SelectedCards}
             />
             {currentPlayer === "farmer2" && (

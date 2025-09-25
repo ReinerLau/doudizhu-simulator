@@ -10,6 +10,8 @@ interface HandCardsProps {
   cards: CardValue[];
   /** 选中的牌的索引数组 */
   selectedIndexes?: number[];
+  /** 是否禁用选牌功能 */
+  disabled?: boolean;
   /** 选中的牌的索引回调 */
   onSelectionChange?: (selectedIndexes: number[]) => void;
 }
@@ -21,6 +23,7 @@ interface HandCardsProps {
 const HandCards: React.FC<HandCardsProps> = ({
   cards,
   selectedIndexes = [],
+  disabled = false,
   onSelectionChange,
 }) => {
   /**
@@ -28,6 +31,11 @@ const HandCards: React.FC<HandCardsProps> = ({
    * @param index - 被点击牌的索引
    */
   const handleCardClick = (index: number) => {
+    // 如果组件被禁用，则不响应点击事件
+    if (disabled) {
+      return;
+    }
+
     const newSelectedIndexes = selectedIndexes.includes(index)
       ? selectedIndexes.filter((i) => i !== index) // 如果已选中则取消选中
       : [...selectedIndexes, index]; // 如果未选中则添加到选中列表
