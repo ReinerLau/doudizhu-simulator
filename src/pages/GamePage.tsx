@@ -68,12 +68,9 @@ function GamePage() {
                 <HandCards cards={currentGame?.cards.farmer2 || []} />
               </div>
               <div className="flex gap-2 justify-center">
-                <Button size="small" onClick={() => handlePass("farmer2")}>
-                  过牌
-                </Button>
+                <Button onClick={() => handlePass("farmer2")}>过牌</Button>
                 <Button
                   type="primary"
-                  size="small"
                   onClick={() => handlePlayCards("farmer2")}
                 >
                   出牌
@@ -91,12 +88,9 @@ function GamePage() {
                 <HandCards cards={currentGame?.cards.farmer1 || []} />
               </div>
               <div className="flex gap-2 justify-center">
-                <Button size="small" onClick={() => handlePass("farmer1")}>
-                  过牌
-                </Button>
+                <Button onClick={() => handlePass("farmer1")}>过牌</Button>
                 <Button
                   type="primary"
-                  size="small"
                   onClick={() => handlePlayCards("farmer1")}
                 >
                   出牌
@@ -114,12 +108,9 @@ function GamePage() {
                 <HandCards cards={currentGame?.cards.landlord || []} />
               </div>
               <div className="flex gap-3 justify-center">
-                <Button size="large" onClick={() => handlePass("landlord")}>
-                  过牌
-                </Button>
+                <Button onClick={() => handlePass("landlord")}>过牌</Button>
                 <Button
                   type="primary"
-                  size="large"
                   onClick={() => handlePlayCards("landlord")}
                 >
                   出牌
