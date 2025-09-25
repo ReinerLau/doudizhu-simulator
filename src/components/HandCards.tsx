@@ -18,7 +18,7 @@ const HandCards: React.FC<HandCardsProps> = ({ cards }) => {
   return (
     <Row gutter={[8, 8]}>
       {cards.map((cardValue, index) => (
-        <Col key={index} span={2}>
+        <Col key={index} span={2} md={1}>
           <Card value={cardValue} />
         </Col>
       ))}
