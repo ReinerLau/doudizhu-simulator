@@ -46,7 +46,7 @@ const HandCards: React.FC<HandCardsProps> = ({
   return (
     <Row gutter={[8, 8]}>
       {cards.map((cardValue, index) => (
-        <Col key={index} span={2} md={1}>
+        <Col key={index} span={3} md={1}>
           <Card
             value={cardValue}
             selected={selectedIndexes.includes(index)}
