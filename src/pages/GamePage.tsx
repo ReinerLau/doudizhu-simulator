@@ -146,6 +146,7 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.landlord || []}
+              selectedIndexes={landlordSelectedCards}
               onSelectionChange={setLandlordSelectedCards}
             />
             {currentPlayer === "landlord" && (
@@ -178,6 +179,7 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer1 || []}
+              selectedIndexes={farmer1SelectedCards}
               onSelectionChange={setFarmer1SelectedCards}
             />
             {currentPlayer === "farmer1" && (
@@ -210,6 +212,7 @@ function GamePage() {
             {/* 手牌展示 */}
             <HandCards
               cards={currentGame?.cards.farmer2 || []}
+              selectedIndexes={farmer2SelectedCards}
               onSelectionChange={setFarmer2SelectedCards}
             />
             {currentPlayer === "farmer2" && (
