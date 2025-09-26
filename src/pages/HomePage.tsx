@@ -12,6 +12,7 @@ import type { Game } from "../types";
 function HomePage() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const [modal, modalContextHolder] = Modal.useModal();
 
   // 搜索关键词状态
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -112,7 +113,7 @@ function HomePage() {
     const game = games.find((g) => g.id === gameId);
     if (!game) return;
 
-    Modal.confirm({
+    modal.confirm({
       title: "确认删除",
       content: `确定要删除对局 "${game.title}" 吗？此操作不可撤销。`,
       okText: "确定",
@@ -123,8 +124,7 @@ function HomePage() {
           await GameDatabaseService.deleteGame(gameId);
           messageApi.success("对局删除成功");
           await reloadGames();
-        } catch (error) {
-          console.error("删除对局失败:", error);
+        } catch {
           messageApi.error("删除对局失败");
         }
       },
@@ -290,6 +290,7 @@ function HomePage() {
   return (
     <div className="h-screen bg-gray-50 p-6">
       {contextHolder}
+      {modalContextHolder}
       {/* 操作栏 */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <Row gutter={[16, 16]} align="middle">

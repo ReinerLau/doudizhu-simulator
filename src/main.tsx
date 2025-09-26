@@ -4,11 +4,15 @@ import "./index.css";
 import "virtual:uno.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router";
+import { ConfigProvider } from "antd";
+import zhCN from "antd/locale/zh_CN";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <ConfigProvider locale={zhCN}>
+        <App />
+      </ConfigProvider>
     </BrowserRouter>
   </StrictMode>
 );
