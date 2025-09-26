@@ -365,15 +365,16 @@ function GamePage() {
         },
       };
 
-      const savedId = await GameDatabaseService.saveGame(gameData);
+      await GameDatabaseService.saveGame(gameData);
 
       if (isNewMode) {
         message.success("对局创建成功");
-        // 新增模式保存后跳转到编辑模式
-        navigate(`/game/${savedId}/edit`);
       } else {
         message.success("对局保存成功");
       }
+
+      // 保存成功后跳转到首页
+      navigate("/");
     } catch (error) {
       console.error("保存对局失败:", error);
       message.error("保存对局失败");
