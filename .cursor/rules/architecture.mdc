@@ -10,3 +10,4 @@ alwaysApply: true
 - 图标库: Material Design Icons
 - 路由管理: React Router
 - 组件库: Ant Design
+- IndexedDB 封装库: idb
