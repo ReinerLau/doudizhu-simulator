@@ -327,19 +327,31 @@ function HomePage() {
       <Row gutter={[16, 16]}>
         {filteredGames.map((game) => (
           <Col key={game.id} xs={24} sm={6}>
-            <Dropdown menu={getContextMenu(game.id)} trigger={["contextMenu"]}>
-              <Card
-                hoverable
-                className="cursor-pointer transition-all duration-200 hover:shadow-md"
-                onClick={() => handleCardClick(game.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center justify-center">
-                    <h3 className="text-lg">{game.title}</h3>
-                  </div>
+            <Card
+              hoverable
+              className="cursor-pointer transition-all duration-200 hover:shadow-md relative"
+              onClick={() => handleCardClick(game.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 flex items-center justify-center">
+                  <h3 className="text-lg">{game.title}</h3>
                 </div>
-              </Card>
-            </Dropdown>
+              </div>
+              {/* 更多操作按钮 */}
+              <Dropdown menu={getContextMenu(game.id)} trigger={["click"]}>
+                <Button
+                  type="text"
+                  size="small"
+                  className="absolute top-2 right-2 p-1 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片点击
+                  }}
+                  icon={
+                    <div className="i-mdi-dots-horizontal  text-base"></div>
+                  }
+                />
+              </Dropdown>
+            </Card>
           </Col>
         ))}
       </Row>
