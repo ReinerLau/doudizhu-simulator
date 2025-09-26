@@ -2,13 +2,14 @@ import { Button, Modal, Input, message } from "antd";
 import { useNavigate, useParams, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import {
-  mockGames,
   type PlayerType,
   type PlayerCards,
+  type Game,
 } from "../data/mockGames";
 import HandCards from "../components/HandCards";
 import PlayedCards from "../components/PlayedCards";
 import { type CardValue } from "../components/Card";
+import GameDatabaseService from "../services/gameDatabase";
 
 /** 玩家出牌顺序 */
 const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];
@@ -47,11 +48,9 @@ function GamePage() {
   const isNewMode = gameId === "new";
 
   /**
-   * 根据 gameId 获取对局信息
+   * 当前对局信息（从数据库加载）
    */
-  const currentGame = isNewMode
-    ? null
-    : mockGames.find((game) => game.id === Number(gameId));
+  const [currentGame, setCurrentGame] = useState<Game | null>(null);
 
   /** 当前玩家选中的牌索引 */
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
@@ -81,6 +80,9 @@ function GamePage() {
     useState<boolean>(false);
   const [editingPlayer, setEditingPlayer] = useState<PlayerType | null>(null);
   const [cardsInputValue, setCardsInputValue] = useState<string>("");
+
+  /** 保存状态 */
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   /**
    * 检查游戏是否结束
@@ -113,6 +115,30 @@ function GamePage() {
   };
 
   /**
+   * 从数据库加载对局数据
+   */
+  useEffect(() => {
+    const loadGame = async () => {
+      if (isNewMode) {
+        // 新增模式：设置默认值
+        setCurrentGame(null);
+        return;
+      }
+
+      try {
+        const game = await GameDatabaseService.getGameById(Number(gameId));
+        setCurrentGame(game || null);
+      } catch (error) {
+        console.error("加载对局失败:", error);
+        message.error("加载对局失败");
+        navigate("/");
+      }
+    };
+
+    loadGame();
+  }, [gameId, isNewMode, navigate]);
+
+  /**
    * 根据对局数据设置首发玩家和初始手牌
    */
   useEffect(() => {
@@ -136,7 +162,7 @@ function GamePage() {
         farmer2: [...currentGame.cards.farmer2],
       });
     }
-  }, [gameId, currentGame, isNewMode]);
+  }, [currentGame, isNewMode]);
 
   /**
    * 监听手牌变化，检查游戏是否结束
@@ -307,6 +333,56 @@ function GamePage() {
   };
 
   /**
+   * 保存对局到数据库
+   */
+  const handleSaveGame = async () => {
+    if (!gameTitle.trim()) {
+      message.error("对局名称不能为空");
+      return;
+    }
+
+    // 检查是否所有玩家都有手牌
+    if (
+      currentCards.landlord.length === 0 &&
+      currentCards.farmer1.length === 0 &&
+      currentCards.farmer2.length === 0
+    ) {
+      message.error("请至少为一个玩家设置手牌");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const gameData: Omit<Game, "id"> | Game = {
+        ...(currentGame?.id ? { id: currentGame.id } : {}),
+        title: gameTitle.trim(),
+        firstPlayer: currentPlayer,
+        cards: {
+          landlord: [...currentCards.landlord],
+          farmer1: [...currentCards.farmer1],
+          farmer2: [...currentCards.farmer2],
+        },
+      };
+
+      const savedId = await GameDatabaseService.saveGame(gameData);
+
+      if (isNewMode) {
+        message.success("对局创建成功");
+        // 新增模式保存后跳转到编辑模式
+        navigate(`/game/${savedId}/edit`);
+      } else {
+        message.success("对局保存成功");
+      }
+    } catch (error) {
+      console.error("保存对局失败:", error);
+      message.error("保存对局失败");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  /**
    * 处理过牌操作
    * @param player - 玩家身份 ('landlord' | 'farmer1' | 'farmer2')
    */
@@ -404,7 +480,11 @@ function GamePage() {
             )}
           </div>
           {!isEditMode && <Button onClick={handleRestart}>重来</Button>}
-          {isEditMode && <Button type="primary">保存</Button>}
+          {isEditMode && (
+            <Button type="primary" loading={isSaving} onClick={handleSaveGame}>
+              {isSaving ? "保存中..." : "保存"}
+            </Button>
+          )}
         </div>
       </div>
 
