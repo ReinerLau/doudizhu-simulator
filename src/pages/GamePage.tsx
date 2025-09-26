@@ -1,15 +1,10 @@
 import { Button, Modal, Input, message } from "antd";
 import { useNavigate, useParams, useLocation } from "react-router";
 import { useState, useEffect } from "react";
-import {
-  type PlayerType,
-  type PlayerCards,
-  type Game,
-} from "../data/mockGames";
 import Player from "../components/Player";
 import PlayedCards from "../components/PlayedCards";
-import { type CardValue } from "../components/Card";
 import GameDatabaseService from "../services/gameDatabase";
+import type { PlayerType, PlayerCards, Game, CardValue } from "../types";
 
 /** 玩家出牌顺序 */
 const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];

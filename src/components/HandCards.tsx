@@ -1,20 +1,7 @@
 import React from "react";
 import { Row, Col } from "antd";
-import Card, { type CardValue } from "./Card";
-
-/**
- * 手牌展示组件属性
- */
-interface HandCardsProps {
-  /** 手牌数组 */
-  cards: CardValue[];
-  /** 选中的牌的索引数组 */
-  selectedIndexes?: number[];
-  /** 是否禁用选牌功能 */
-  disabled?: boolean;
-  /** 选中的牌的索引回调 */
-  onSelectionChange?: (selectedIndexes: number[]) => void;
-}
+import Card from "./Card";
+import type { HandCardsProps } from "../types";
 
 /**
  * 手牌展示组件

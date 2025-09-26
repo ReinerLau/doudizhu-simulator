@@ -1,7 +1,6 @@
 import { Button } from "antd";
-import { type PlayerType } from "../data/mockGames";
-import { type CardValue } from "./Card";
 import HandCards from "./HandCards";
+import type { PlayerType, PlayerProps } from "../types";
 
 /** 玩家显示名称映射 */
 const playerDisplayNames: Record<PlayerType, string> = {
@@ -9,30 +8,6 @@ const playerDisplayNames: Record<PlayerType, string> = {
   farmer1: "下家",
   farmer2: "顶家",
 };
-
-/** Player 组件的属性接口 */
-interface PlayerProps {
-  /** 玩家类型 */
-  playerType: PlayerType;
-  /** 玩家手牌 */
-  cards: CardValue[];
-  /** 选中的手牌索引 */
-  selectedIndexes: number[];
-  /** 是否为当前轮次的玩家 */
-  isCurrentPlayer: boolean;
-  /** 是否为编辑模式 */
-  isEditMode: boolean;
-  /** 游戏是否已结束 */
-  isGameEnded: boolean;
-  /** 手牌选择变化回调 */
-  onSelectionChange: (indexes: number[]) => void;
-  /** 过牌操作回调 */
-  onPass: (player: PlayerType) => void;
-  /** 出牌操作回调 */
-  onPlayCards: (player: PlayerType) => void;
-  /** 编辑手牌操作回调 */
-  onEditCards: (player: PlayerType) => void;
-}
 
 /**
  * 玩家组件 - 展示玩家身份、手牌和操作按钮

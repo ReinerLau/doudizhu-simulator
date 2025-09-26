@@ -1,14 +1,7 @@
 import React from "react";
 import { Row, Col } from "antd";
-import Card, { type CardValue } from "./Card";
-
-/**
- * 牌堆组件属性
- */
-interface PlayedCardsProps {
-  /** 当前牌堆中的牌（最近一次出牌） */
-  playedCards: CardValue[];
-}
+import Card from "./Card";
+import type { PlayedCardsProps } from "../types";
 
 /**
  * 牌堆组件

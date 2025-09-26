@@ -2,8 +2,8 @@ import { Button, Input, Card, Dropdown, Row, Col, message, Modal } from "antd";
 import type { MenuProps } from "antd";
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { type Game } from "../data/mockGames";
 import GameDatabaseService from "../services/gameDatabase";
+import type { Game } from "../types";
 
 /**
  * 首页组件

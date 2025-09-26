@@ -1,16 +1,5 @@
-import { openDB, type DBSchema, type IDBPDatabase } from "idb";
-import { type Game } from "../data/mockGames";
-
-/**
- * IndexedDB 数据库结构定义
- */
-interface GameDB extends DBSchema {
-  games: {
-    key: number;
-    value: Game;
-    indexes: { title: string };
-  };
-}
+import { openDB, type IDBPDatabase } from "idb";
+import type { Game, GameDB } from "../types";
 
 /**
  * 数据库名称和版本
