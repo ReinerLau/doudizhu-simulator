@@ -1,4 +1,4 @@
-import { Button, Input, Card, Upload, Dropdown, Space } from "antd";
+import { Button, Input, Card, Dropdown, Row, Col } from "antd";
 import type { MenuProps } from "antd";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
@@ -96,73 +96,63 @@ function HomePage() {
     <div className="h-screen bg-gray-50 p-6">
       {/* 操作栏 */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <Row gutter={[16, 16]} align="middle">
           {/* 搜索框 */}
-          <div className="flex-1">
+          <Col xs={24} sm={18}>
             <Input
               placeholder="搜索对局标题..."
               size="large"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
-          </div>
+          </Col>
 
           {/* 操作按钮 */}
-          <Space size="middle" className="flex-shrink-0">
-            <Upload
-              accept=".json"
-              showUploadList={false}
-              beforeUpload={() => false}
-            >
-              <Button
-                size="large"
-                icon={<span className="i-mdi-upload text-base"></span>}
-              >
-                上传对局
-              </Button>
-            </Upload>
-
-            <Button
-              size="large"
-              icon={<span className="i-mdi-download text-base"></span>}
-            >
-              下载对局
+          <Col xs={8} sm={2}>
+            <Button size="large" className="w-full">
+              <span>上传对局</span>
             </Button>
+          </Col>
 
+          <Col xs={8} sm={2}>
+            <Button size="large" className="w-full">
+              <span>下载对局</span>
+            </Button>
+          </Col>
+
+          <Col xs={8} sm={2}>
             <Button
               type="primary"
               size="large"
-              icon={<span className="i-mdi-plus text-base"></span>}
               onClick={handleAddGame}
+              className="w-full"
             >
-              添加对局
+              <span>添加对局</span>
             </Button>
-          </Space>
-        </div>
+          </Col>
+        </Row>
       </div>
 
       {/* 对局卡片网格 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <Row gutter={[16, 16]}>
         {filteredGames.map((game) => (
-          <Dropdown
-            key={game.id}
-            menu={getContextMenu(game.id)}
-            trigger={["contextMenu"]}
-          >
-            <Card
-              hoverable
-              className="cursor-pointer transition-all duration-200 hover:shadow-md"
-              onClick={() => handleCardClick(game.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1 flex items-center justify-center">
-                  <h3 className="text-lg">{game.title}</h3>
+          <Col key={game.id} xs={24} sm={6}>
+            <Dropdown menu={getContextMenu(game.id)} trigger={["contextMenu"]}>
+              <Card
+                hoverable
+                className="cursor-pointer transition-all duration-200 hover:shadow-md"
+                onClick={() => handleCardClick(game.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 flex items-center justify-center">
+                    <h3 className="text-lg">{game.title}</h3>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </Dropdown>
+              </Card>
+            </Dropdown>
+          </Col>
         ))}
-      </div>
+      </Row>
 
       {/* 空状态提示 */}
       {filteredGames.length === 0 && (
