@@ -12,11 +12,11 @@ function App() {
       {/* 首页路由 */}
       <Route path="/" element={<HomePage />} />
 
+      {/* 对局页面路由 - 编辑模式 */}
+      <Route path="/edit-game/:gameId" element={<GamePage />} />
+
       {/* 对局页面路由 - 正常模式和新增模式 */}
       <Route path="/game/:gameId" element={<GamePage />} />
-
-      {/* 对局页面路由 - 编辑模式 */}
-      <Route path="/game/:gameId/edit" element={<GamePage />} />
     </Routes>
   );
 }

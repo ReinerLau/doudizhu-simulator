@@ -52,7 +52,7 @@ function HomePage() {
     };
 
     initializeData();
-  }, []);
+  }, [messageApi]);
 
   /**
    * 重新加载对局列表
@@ -79,11 +79,21 @@ function HomePage() {
    * 处理右键菜单点击事件
    * @param key - 菜单项key
    * @param gameId - 对局ID
+   * @param event - 点击事件对象
    */
-  const handleMenuClick = (key: string, gameId: number) => {
+  const handleMenuClick = (
+    key: string,
+    gameId: number,
+    event?: React.MouseEvent | React.KeyboardEvent
+  ) => {
+    // 阻止事件冒泡，避免触发卡片点击
+    if (event) {
+      event.stopPropagation();
+    }
+
     switch (key) {
       case "edit":
-        navigate(`/game/${gameId}/edit`);
+        navigate(`/edit-game/${gameId}`);
         break;
       case "delete":
         handleDeleteGame(gameId);
@@ -226,7 +236,7 @@ function HomePage() {
     input.click();
   };
 
-  // 右键菜单配置
+  // 更多菜单
   const getContextMenu = (gameId: number): MenuProps => ({
     items: [
       {
@@ -257,7 +267,7 @@ function HomePage() {
         ),
       },
     ],
-    onClick: ({ key }) => handleMenuClick(key, gameId),
+    onClick: ({ key, domEvent }) => handleMenuClick(key, gameId, domEvent),
   });
 
   /**

@@ -39,7 +39,8 @@ function GamePage() {
   const [messageApi, contextHolder] = message.useMessage();
 
   /** 判断是否为编辑模式 */
-  const isEditMode = location.pathname.includes("/edit") || gameId === "new";
+  const isEditMode =
+    location.pathname.startsWith("/edit-game/") || gameId === "new";
   /** 判断是否为新增模式 */
   const isNewMode = gameId === "new";
 
