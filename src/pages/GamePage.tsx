@@ -556,12 +556,12 @@ function GamePage() {
 
       {/* 编辑对局名称弹窗 */}
       <Modal
-        title="编辑对局名称"
         open={editTitleModalVisible}
         onOk={handleConfirmEditTitle}
         onCancel={handleCancelEdit}
         okText="确认"
         cancelText="取消"
+        closable={false}
       >
         <Input
           placeholder="请输入对局名称"
@@ -573,40 +573,19 @@ function GamePage() {
 
       {/* 编辑手牌弹窗 */}
       <Modal
-        title={`编辑${
-          editingPlayer === "landlord"
-            ? "地主"
-            : editingPlayer === "farmer1"
-            ? "下家"
-            : "顶家"
-        }手牌`}
         open={editCardsModalVisible}
         onOk={handleConfirmEditCards}
         onCancel={handleCancelEdit}
         okText="确认"
         cancelText="取消"
-        width={600}
+        closable={false}
       >
-        <div className="space-y-4">
-          <div>
-            <p className="text-gray-600 mb-2">
-              请输入手牌，用空格或逗号分隔。
-              {editingPlayer === "landlord" ? "地主" : "农民"}最多{" "}
-              {editingPlayer === "landlord" ? "20" : "17"} 张牌。
-            </p>
-            <p className="text-sm text-gray-500 mb-3">
-              有效手牌类型: {validCardValues.join(", ")}
-            </p>
-          </div>
-          <Input.TextArea
-            placeholder="例如: D X 2 2 A A K Q J 10 9 8 7 6 5 4 3"
-            value={cardsInputValue}
-            onChange={(e) => setCardsInputValue(e.target.value)}
-            rows={4}
-            showCount
-            maxLength={200}
-          />
-        </div>
+        <Input
+          placeholder="例如: D X 2 2 A A K Q J 10 9 8 7 6 5 4 3"
+          value={cardsInputValue}
+          onChange={(e) => setCardsInputValue(e.target.value)}
+          maxLength={200}
+        />
       </Modal>
     </div>
   );
