@@ -226,13 +226,26 @@ function GamePage() {
       return { isValid: true, cards: [] };
     }
 
-    // 按空格或逗号分割
-    const cardStrings = trimmedInput
-      .split(/[,\s]+/)
-      .filter((card) => card.length > 0);
+    // 通过字符切割，特殊处理10
     const cards: CardValue[] = [];
+    let i = 0;
 
-    for (const cardStr of cardStrings) {
+    while (i < trimmedInput.length) {
+      let cardStr = "";
+
+      // 检查是否为10（两个字符）
+      if (
+        i < trimmedInput.length - 1 &&
+        trimmedInput.slice(i, i + 2) === "10"
+      ) {
+        cardStr = "10";
+        i += 2;
+      } else {
+        // 单个字符的牌
+        cardStr = trimmedInput[i];
+        i += 1;
+      }
+
       // 转换为大写进行匹配，支持大小写兼容
       const upperCardStr = cardStr.toUpperCase();
       if (!validCardValues.includes(upperCardStr as CardValue)) {
@@ -292,9 +305,9 @@ function GamePage() {
    */
   const handleEditCards = (player: PlayerType) => {
     setEditingPlayer(player);
-    // 设置当前手牌作为初始值
+    // 设置当前手牌作为初始值，直接连接字符不用空格分隔
     const currentPlayerCards = currentCards[player];
-    setCardsInputValue(currentPlayerCards.join(" "));
+    setCardsInputValue(currentPlayerCards.join(""));
     setEditCardsModalVisible(true);
   };
 
@@ -567,7 +580,7 @@ function GamePage() {
         closable={false}
       >
         <Input
-          placeholder="例如: D X 2 2 A A K Q J 10 9 8 7 6 5 4 3"
+          placeholder="例如: DX22AAKQJ1098765432"
           value={cardsInputValue}
           onChange={(e) => setCardsInputValue(e.target.value)}
           maxLength={200}
