@@ -11,6 +11,7 @@ import GameDatabaseService from "../services/gameDatabase";
  */
 function HomePage() {
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
   // 搜索关键词状态
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -44,7 +45,7 @@ function HomePage() {
         setGames(allGames);
       } catch (error) {
         console.error("初始化数据失败:", error);
-        message.error("加载对局数据失败");
+        messageApi.error("加载对局数据失败");
       } finally {
         setLoading(false);
       }
@@ -62,7 +63,7 @@ function HomePage() {
       setGames(allGames);
     } catch (error) {
       console.error("重新加载对局失败:", error);
-      message.error("重新加载对局失败");
+      messageApi.error("重新加载对局失败");
     }
   };
 
@@ -110,11 +111,11 @@ function HomePage() {
       onOk: async () => {
         try {
           await GameDatabaseService.deleteGame(gameId);
-          message.success("对局删除成功");
+          messageApi.success("对局删除成功");
           await reloadGames();
         } catch (error) {
           console.error("删除对局失败:", error);
-          message.error("删除对局失败");
+          messageApi.error("删除对局失败");
         }
       },
     });
@@ -128,7 +129,7 @@ function HomePage() {
     try {
       const game = games.find((g) => g.id === gameId);
       if (!game) {
-        message.error("对局不存在");
+        messageApi.error("对局不存在");
         return;
       }
 
@@ -144,10 +145,10 @@ function HomePage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      message.success("对局下载成功");
+      messageApi.success("对局下载成功");
     } catch (error) {
       console.error("下载对局失败:", error);
-      message.error("下载对局失败");
+      messageApi.error("下载对局失败");
     }
   };
 
@@ -157,7 +158,7 @@ function HomePage() {
   const handleDownloadAllGames = async () => {
     try {
       if (games.length === 0) {
-        message.warning("暂无对局可下载");
+        messageApi.warning("暂无对局可下载");
         return;
       }
 
@@ -173,10 +174,10 @@ function HomePage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      message.success(`成功下载 ${games.length} 个对局`);
+      messageApi.success(`成功下载 ${games.length} 个对局`);
     } catch (error) {
       console.error("下载所有对局失败:", error);
-      message.error("下载所有对局失败");
+      messageApi.error("下载所有对局失败");
     }
   };
 
@@ -196,14 +197,14 @@ function HomePage() {
         const importedGames = JSON.parse(text);
 
         if (!Array.isArray(importedGames)) {
-          message.error("文件格式错误：应为对局数组");
+          messageApi.error("文件格式错误：应为对局数组");
           return;
         }
 
         // 验证数据格式
         for (const game of importedGames) {
           if (!game.title || !game.cards || !game.firstPlayer) {
-            message.error("文件格式错误：缺少必要字段");
+            messageApi.error("文件格式错误：缺少必要字段");
             return;
           }
         }
@@ -215,11 +216,11 @@ function HomePage() {
           gamesWithoutId
         );
 
-        message.success(`成功导入 ${importedIds.length} 个对局`);
+        messageApi.success(`成功导入 ${importedIds.length} 个对局`);
         await reloadGames();
       } catch (error) {
         console.error("上传对局失败:", error);
-        message.error("上传对局失败：文件格式错误");
+        messageApi.error("上传对局失败：文件格式错误");
       }
     };
     input.click();
@@ -278,6 +279,7 @@ function HomePage() {
 
   return (
     <div className="h-screen bg-gray-50 p-6">
+      {contextHolder}
       {/* 操作栏 */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <Row gutter={[16, 16]} align="middle">

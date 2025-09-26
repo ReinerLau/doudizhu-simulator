@@ -41,6 +41,7 @@ function GamePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { gameId } = useParams<{ gameId: string }>();
+  const [messageApi, contextHolder] = message.useMessage();
 
   /** 判断是否为编辑模式 */
   const isEditMode = location.pathname.includes("/edit") || gameId === "new";
@@ -130,13 +131,13 @@ function GamePage() {
         setCurrentGame(game || null);
       } catch (error) {
         console.error("加载对局失败:", error);
-        message.error("加载对局失败");
+        messageApi.error("加载对局失败");
         navigate("/");
       }
     };
 
     loadGame();
-  }, [gameId, isNewMode, navigate]);
+  }, [gameId, isNewMode, navigate, messageApi]);
 
   /**
    * 根据对局数据设置首发玩家和初始手牌
@@ -279,9 +280,9 @@ function GamePage() {
       setGameTitle(titleInputValue.trim());
       setEditTitleModalVisible(false);
       setTitleInputValue("");
-      message.success("对局名称已更新");
+      messageApi.success("对局名称已更新");
     } else {
-      message.error("对局名称不能为空");
+      messageApi.error("对局名称不能为空");
     }
   };
 
@@ -305,7 +306,7 @@ function GamePage() {
 
     const validation = validateCardsInput(cardsInputValue);
     if (!validation.isValid) {
-      message.error(validation.error);
+      messageApi.error(validation.error);
       return;
     }
 
@@ -318,7 +319,7 @@ function GamePage() {
     setEditCardsModalVisible(false);
     setEditingPlayer(null);
     setCardsInputValue("");
-    message.success("手牌已更新");
+    messageApi.success("手牌已更新");
   };
 
   /**
@@ -337,7 +338,7 @@ function GamePage() {
    */
   const handleSaveGame = async () => {
     if (!gameTitle.trim()) {
-      message.error("对局名称不能为空");
+      messageApi.error("对局名称不能为空");
       return;
     }
 
@@ -347,7 +348,7 @@ function GamePage() {
       currentCards.farmer1.length === 0 &&
       currentCards.farmer2.length === 0
     ) {
-      message.error("请至少为一个玩家设置手牌");
+      messageApi.error("请至少为一个玩家设置手牌");
       return;
     }
 
@@ -368,16 +369,16 @@ function GamePage() {
       await GameDatabaseService.saveGame(gameData);
 
       if (isNewMode) {
-        message.success("对局创建成功");
+        messageApi.success("对局创建成功");
       } else {
-        message.success("对局保存成功");
+        messageApi.success("对局保存成功");
       }
 
       // 保存成功后跳转到首页
       navigate("/");
     } catch (error) {
       console.error("保存对局失败:", error);
-      message.error("保存对局失败");
+      messageApi.error("保存对局失败");
     } finally {
       setIsSaving(false);
     }
@@ -462,6 +463,7 @@ function GamePage() {
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
+      {contextHolder}
       {/* 顶部操作栏 */}
       <div className="bg-white shadow-sm p-4">
         <div className="flex items-center justify-between">
