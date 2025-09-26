@@ -204,7 +204,9 @@ function GamePage() {
     const cards: CardValue[] = [];
 
     for (const cardStr of cardStrings) {
-      if (!validCardValues.includes(cardStr as CardValue)) {
+      // 转换为大写进行匹配，支持大小写兼容
+      const upperCardStr = cardStr.toUpperCase();
+      if (!validCardValues.includes(upperCardStr as CardValue)) {
         return {
           isValid: false,
           cards: [],
@@ -213,7 +215,7 @@ function GamePage() {
           )}`,
         };
       }
-      cards.push(cardStr as CardValue);
+      cards.push(upperCardStr as CardValue);
     }
 
     // 检查手牌数量限制
