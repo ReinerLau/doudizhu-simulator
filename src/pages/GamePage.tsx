@@ -74,6 +74,7 @@ function GamePage() {
 
   /** 编辑模式相关状态 */
   const [gameTitle, setGameTitle] = useState<string>("");
+  const [titleInputValue, setTitleInputValue] = useState<string>("");
   const [editTitleModalVisible, setEditTitleModalVisible] =
     useState<boolean>(false);
   const [editCardsModalVisible, setEditCardsModalVisible] =
@@ -117,7 +118,8 @@ function GamePage() {
   useEffect(() => {
     if (isNewMode) {
       // 新增模式：设置默认值
-      setGameTitle("新对局");
+      const defaultTitle = "新对局";
+      setGameTitle(defaultTitle);
       setCurrentPlayer("landlord");
       setCurrentCards({
         landlord: [],
@@ -237,6 +239,8 @@ function GamePage() {
    * 处理对局名称编辑
    */
   const handleEditTitle = () => {
+    // 将当前标题设置为输入框的初始值
+    setTitleInputValue(gameTitle);
     setEditTitleModalVisible(true);
   };
 
@@ -244,8 +248,11 @@ function GamePage() {
    * 确认修改对局名称
    */
   const handleConfirmEditTitle = () => {
-    if (gameTitle.trim()) {
+    if (titleInputValue.trim()) {
+      // 只有确认时才同步到 gameTitle
+      setGameTitle(titleInputValue.trim());
       setEditTitleModalVisible(false);
+      setTitleInputValue("");
       message.success("对局名称已更新");
     } else {
       message.error("对局名称不能为空");
@@ -296,6 +303,7 @@ function GamePage() {
     setEditCardsModalVisible(false);
     setEditingPlayer(null);
     setCardsInputValue("");
+    setTitleInputValue("");
   };
 
   /**
@@ -567,8 +575,8 @@ function GamePage() {
       >
         <Input
           placeholder="请输入对局名称"
-          value={gameTitle}
-          onChange={(e) => setGameTitle(e.target.value)}
+          value={titleInputValue}
+          onChange={(e) => setTitleInputValue(e.target.value)}
           onPressEnter={handleConfirmEditTitle}
         />
       </Modal>
