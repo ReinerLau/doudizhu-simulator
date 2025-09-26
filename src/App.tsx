@@ -12,14 +12,11 @@ function App() {
       {/* 首页路由 */}
       <Route path="/" element={<HomePage />} />
 
-      {/* 对局页面路由 - 正常模式 */}
+      {/* 对局页面路由 - 正常模式和新增模式 */}
       <Route path="/game/:gameId" element={<GamePage />} />
 
-      {/* 对局页面路由 - 编辑模式 (预留) */}
+      {/* 对局页面路由 - 编辑模式 */}
       <Route path="/game/:gameId/edit" element={<GamePage />} />
-
-      {/* 新增对局页面路由 (预留) */}
-      <Route path="/game/new" element={<GamePage />} />
     </Routes>
   );
 }

@@ -1,5 +1,5 @@
-import { Button } from "antd";
-import { useNavigate, useParams } from "react-router";
+import { Button, Modal, Input, message } from "antd";
+import { useNavigate, useParams, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import {
   mockGames,
@@ -13,18 +13,45 @@ import { type CardValue } from "../components/Card";
 /** 玩家出牌顺序 */
 const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];
 
+/** 有效的手牌类型 */
+const validCardValues: CardValue[] = [
+  "D",
+  "X",
+  "2",
+  "A",
+  "K",
+  "Q",
+  "J",
+  "10",
+  "9",
+  "8",
+  "7",
+  "6",
+  "5",
+  "4",
+  "3",
+];
+
 /**
- * 对局页面组件 - 正常模式
+ * 对局页面组件 - 支持正常模式和编辑模式
  * 展示斗地主对局的游戏界面，包含地主、下家、顶家的手牌和操作
  */
 function GamePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { gameId } = useParams<{ gameId: string }>();
+
+  /** 判断是否为编辑模式 */
+  const isEditMode = location.pathname.includes("/edit") || gameId === "new";
+  /** 判断是否为新增模式 */
+  const isNewMode = gameId === "new";
 
   /**
    * 根据 gameId 获取对局信息
    */
-  const currentGame = mockGames.find((game) => game.id === Number(gameId));
+  const currentGame = isNewMode
+    ? null
+    : mockGames.find((game) => game.id === Number(gameId));
 
   /** 当前玩家选中的牌索引 */
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
@@ -44,6 +71,15 @@ function GamePage() {
 
   /** 游戏是否已结束 */
   const [isGameEnded, setIsGameEnded] = useState<boolean>(false);
+
+  /** 编辑模式相关状态 */
+  const [gameTitle, setGameTitle] = useState<string>("");
+  const [editTitleModalVisible, setEditTitleModalVisible] =
+    useState<boolean>(false);
+  const [editCardsModalVisible, setEditCardsModalVisible] =
+    useState<boolean>(false);
+  const [editingPlayer, setEditingPlayer] = useState<PlayerType | null>(null);
+  const [cardsInputValue, setCardsInputValue] = useState<string>("");
 
   /**
    * 检查游戏是否结束
@@ -79,16 +115,26 @@ function GamePage() {
    * 根据对局数据设置首发玩家和初始手牌
    */
   useEffect(() => {
-    if (currentGame) {
+    if (isNewMode) {
+      // 新增模式：设置默认值
+      setGameTitle("新对局");
+      setCurrentPlayer("landlord");
+      setCurrentCards({
+        landlord: [],
+        farmer1: [],
+        farmer2: [],
+      });
+    } else if (currentGame) {
+      // 编辑或正常模式：使用现有数据
+      setGameTitle(currentGame.title);
       setCurrentPlayer(currentGame.firstPlayer);
-      // 初始化手牌状态，深拷贝避免修改原始数据
       setCurrentCards({
         landlord: [...currentGame.cards.landlord],
         farmer1: [...currentGame.cards.farmer1],
         farmer2: [...currentGame.cards.farmer2],
       });
     }
-  }, [gameId, currentGame]);
+  }, [gameId, currentGame, isNewMode]);
 
   /**
    * 监听手牌变化，检查游戏是否结束
@@ -136,6 +182,118 @@ function GamePage() {
       setIsGameEnded(false);
       console.log("对局已重置到初始状态");
     }
+  };
+
+  /**
+   * 验证手牌输入是否有效
+   * @param input - 输入的手牌字符串
+   * @returns 验证结果和错误信息
+   */
+  const validateCardsInput = (
+    input: string
+  ): { isValid: boolean; cards: CardValue[]; error?: string } => {
+    const trimmedInput = input.trim();
+    if (!trimmedInput) {
+      return { isValid: true, cards: [] };
+    }
+
+    // 按空格或逗号分割
+    const cardStrings = trimmedInput
+      .split(/[,\s]+/)
+      .filter((card) => card.length > 0);
+    const cards: CardValue[] = [];
+
+    for (const cardStr of cardStrings) {
+      if (!validCardValues.includes(cardStr as CardValue)) {
+        return {
+          isValid: false,
+          cards: [],
+          error: `无效的手牌类型: ${cardStr}。有效类型: ${validCardValues.join(
+            ", "
+          )}`,
+        };
+      }
+      cards.push(cardStr as CardValue);
+    }
+
+    // 检查手牌数量限制
+    const maxCards = editingPlayer === "landlord" ? 20 : 17;
+    if (cards.length > maxCards) {
+      return {
+        isValid: false,
+        cards: [],
+        error: `${
+          editingPlayer === "landlord" ? "地主" : "农民"
+        }手牌数量不能超过${maxCards}张`,
+      };
+    }
+
+    return { isValid: true, cards };
+  };
+
+  /**
+   * 处理对局名称编辑
+   */
+  const handleEditTitle = () => {
+    setEditTitleModalVisible(true);
+  };
+
+  /**
+   * 确认修改对局名称
+   */
+  const handleConfirmEditTitle = () => {
+    if (gameTitle.trim()) {
+      setEditTitleModalVisible(false);
+      message.success("对局名称已更新");
+    } else {
+      message.error("对局名称不能为空");
+    }
+  };
+
+  /**
+   * 处理手牌编辑
+   * @param player - 要编辑的玩家
+   */
+  const handleEditCards = (player: PlayerType) => {
+    setEditingPlayer(player);
+    // 设置当前手牌作为初始值
+    const currentPlayerCards = currentCards[player];
+    setCardsInputValue(currentPlayerCards.join(" "));
+    setEditCardsModalVisible(true);
+  };
+
+  /**
+   * 确认修改手牌
+   */
+  const handleConfirmEditCards = () => {
+    if (!editingPlayer) return;
+
+    const validation = validateCardsInput(cardsInputValue);
+    if (!validation.isValid) {
+      message.error(validation.error);
+      return;
+    }
+
+    // 更新手牌
+    setCurrentCards((prev) => ({
+      ...prev,
+      [editingPlayer]: validation.cards,
+    }));
+
+    setEditCardsModalVisible(false);
+    setEditingPlayer(null);
+    setCardsInputValue("");
+    message.success("手牌已更新");
+  };
+
+  /**
+   * 取消编辑
+   */
+  const handleCancelEdit = () => {
+    setEditTitleModalVisible(false);
+    setEditCardsModalVisible(false);
+    setEditingPlayer(null);
+    setCardsInputValue("");
   };
 
   /**
@@ -223,9 +381,20 @@ function GamePage() {
           <Button onClick={handleGoBack}>返回</Button>
           <div className="flex flex-col items-center">
             {/* 对局名称 */}
-            <h1 className="text-xl font-semibold">{currentGame!.title}</h1>
+            {isEditMode ? (
+              <h1
+                className="text-xl font-semibold cursor-pointer hover:text-blue-500 transition-colors"
+                onClick={handleEditTitle}
+                title="点击编辑对局名称"
+              >
+                {gameTitle}
+              </h1>
+            ) : (
+              <h1 className="text-xl font-semibold">{gameTitle}</h1>
+            )}
           </div>
-          <Button onClick={handleRestart}>重来</Button>
+          {!isEditMode && <Button onClick={handleRestart}>重来</Button>}
+          {isEditMode && <Button type="primary">保存</Button>}
         </div>
       </div>
 
@@ -236,36 +405,52 @@ function GamePage() {
           <div className="flex flex-col gap-4">
             <div
               className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "landlord" ? "ring-2 ring-blue-500" : ""
+                currentPlayer === "landlord" && !isEditMode
+                  ? "ring-2 ring-blue-500"
+                  : ""
               }`}
             >
               地主
             </div>
             {/* 手牌展示 */}
-            <HandCards
-              cards={currentCards.landlord}
-              selectedIndexes={
-                currentPlayer === "landlord" ? selectedCards : []
-              }
-              disabled={currentPlayer !== "landlord"}
-              onSelectionChange={setSelectedCards}
-            />
-            {currentPlayer === "landlord" && !isGameEnded && (
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={() => handlePass("landlord")}
-                >
-                  过牌
-                </Button>
-                <Button
-                  className="flex-1"
-                  type="primary"
-                  onClick={() => handlePlayCards("landlord")}
-                >
-                  出牌
-                </Button>
-              </div>
+            {currentCards.landlord.length > 0 && (
+              <HandCards
+                cards={currentCards.landlord}
+                selectedIndexes={
+                  currentPlayer === "landlord" && !isEditMode
+                    ? selectedCards
+                    : []
+                }
+                disabled={currentPlayer !== "landlord" || isEditMode}
+                onSelectionChange={setSelectedCards}
+              />
+            )}
+            {isEditMode ? (
+              <Button
+                type="primary"
+                onClick={() => handleEditCards("landlord")}
+              >
+                编辑手牌
+              </Button>
+            ) : (
+              currentPlayer === "landlord" &&
+              !isGameEnded && (
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    onClick={() => handlePass("landlord")}
+                  >
+                    过牌
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    type="primary"
+                    onClick={() => handlePlayCards("landlord")}
+                  >
+                    出牌
+                  </Button>
+                </div>
+              )
             )}
           </div>
           {/* 下家 */}
@@ -278,28 +463,41 @@ function GamePage() {
               下家
             </div>
             {/* 手牌展示 */}
-            <HandCards
-              cards={currentCards.farmer1}
-              selectedIndexes={currentPlayer === "farmer1" ? selectedCards : []}
-              disabled={currentPlayer !== "farmer1"}
-              onSelectionChange={setSelectedCards}
-            />
-            {currentPlayer === "farmer1" && !isGameEnded && (
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={() => handlePass("farmer1")}
-                >
-                  过牌
-                </Button>
-                <Button
-                  className="flex-1"
-                  type="primary"
-                  onClick={() => handlePlayCards("farmer1")}
-                >
-                  出牌
-                </Button>
-              </div>
+            {currentCards.farmer1.length > 0 && (
+              <HandCards
+                cards={currentCards.farmer1}
+                selectedIndexes={
+                  currentPlayer === "farmer1" && !isEditMode
+                    ? selectedCards
+                    : []
+                }
+                disabled={currentPlayer !== "farmer1" || isEditMode}
+                onSelectionChange={setSelectedCards}
+              />
+            )}
+            {isEditMode ? (
+              <Button type="primary" onClick={() => handleEditCards("farmer1")}>
+                编辑手牌
+              </Button>
+            ) : (
+              currentPlayer === "farmer1" &&
+              !isGameEnded && (
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    onClick={() => handlePass("farmer1")}
+                  >
+                    过牌
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    type="primary"
+                    onClick={() => handlePlayCards("farmer1")}
+                  >
+                    出牌
+                  </Button>
+                </div>
+              )
             )}
           </div>
           {/* 顶家 */}
@@ -312,28 +510,41 @@ function GamePage() {
               顶家
             </div>
             {/* 手牌展示 */}
-            <HandCards
-              cards={currentCards.farmer2}
-              selectedIndexes={currentPlayer === "farmer2" ? selectedCards : []}
-              disabled={currentPlayer !== "farmer2"}
-              onSelectionChange={setSelectedCards}
-            />
-            {currentPlayer === "farmer2" && !isGameEnded && (
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={() => handlePass("farmer2")}
-                >
-                  过牌
-                </Button>
-                <Button
-                  className="flex-1"
-                  type="primary"
-                  onClick={() => handlePlayCards("farmer2")}
-                >
-                  出牌
-                </Button>
-              </div>
+            {currentCards.farmer2.length > 0 && (
+              <HandCards
+                cards={currentCards.farmer2}
+                selectedIndexes={
+                  currentPlayer === "farmer2" && !isEditMode
+                    ? selectedCards
+                    : []
+                }
+                disabled={currentPlayer !== "farmer2" || isEditMode}
+                onSelectionChange={setSelectedCards}
+              />
+            )}
+            {isEditMode ? (
+              <Button type="primary" onClick={() => handleEditCards("farmer2")}>
+                编辑手牌
+              </Button>
+            ) : (
+              currentPlayer === "farmer2" &&
+              !isGameEnded && (
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    onClick={() => handlePass("farmer2")}
+                  >
+                    过牌
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    type="primary"
+                    onClick={() => handlePlayCards("farmer2")}
+                  >
+                    出牌
+                  </Button>
+                </div>
+              )
             )}
           </div>
         </div>
@@ -342,6 +553,61 @@ function GamePage() {
           <PlayedCards playedCards={playedCards} />
         </div>
       </div>
+
+      {/* 编辑对局名称弹窗 */}
+      <Modal
+        title="编辑对局名称"
+        open={editTitleModalVisible}
+        onOk={handleConfirmEditTitle}
+        onCancel={handleCancelEdit}
+        okText="确认"
+        cancelText="取消"
+      >
+        <Input
+          placeholder="请输入对局名称"
+          value={gameTitle}
+          onChange={(e) => setGameTitle(e.target.value)}
+          onPressEnter={handleConfirmEditTitle}
+        />
+      </Modal>
+
+      {/* 编辑手牌弹窗 */}
+      <Modal
+        title={`编辑${
+          editingPlayer === "landlord"
+            ? "地主"
+            : editingPlayer === "farmer1"
+            ? "下家"
+            : "顶家"
+        }手牌`}
+        open={editCardsModalVisible}
+        onOk={handleConfirmEditCards}
+        onCancel={handleCancelEdit}
+        okText="确认"
+        cancelText="取消"
+        width={600}
+      >
+        <div className="space-y-4">
+          <div>
+            <p className="text-gray-600 mb-2">
+              请输入手牌，用空格或逗号分隔。
+              {editingPlayer === "landlord" ? "地主" : "农民"}最多{" "}
+              {editingPlayer === "landlord" ? "20" : "17"} 张牌。
+            </p>
+            <p className="text-sm text-gray-500 mb-3">
+              有效手牌类型: {validCardValues.join(", ")}
+            </p>
+          </div>
+          <Input.TextArea
+            placeholder="例如: D X 2 2 A A K Q J 10 9 8 7 6 5 4 3"
+            value={cardsInputValue}
+            onChange={(e) => setCardsInputValue(e.target.value)}
+            rows={4}
+            showCount
+            maxLength={200}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }
