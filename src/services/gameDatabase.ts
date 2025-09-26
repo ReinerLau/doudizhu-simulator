@@ -92,27 +92,6 @@ export class GameDatabaseService {
   }
 
   /**
-   * 批量导入对局数据
-   * @param games - 对局数组
-   * @returns Promise<number[]> 返回导入后的对局ID数组
-   */
-  static async importGames(games: Omit<Game, "id">[]): Promise<number[]> {
-    const db = await getDB();
-    const tx = db.transaction("games", "readwrite");
-    const store = tx.objectStore("games");
-
-    const importedIds: number[] = [];
-
-    for (const game of games) {
-      const result = await store.add(game as Game);
-      importedIds.push(result as number);
-    }
-
-    await tx.done;
-    return importedIds;
-  }
-
-  /**
    * 清空所有对局数据
    * @returns Promise<void>
    */

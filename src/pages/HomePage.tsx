@@ -7,7 +7,7 @@ import type { Game } from "../types";
 
 /**
  * 首页组件
- * 展示对局列表、搜索、上传下载等功能
+ * 展示对局列表、搜索等功能
  */
 function HomePage() {
   const navigate = useNavigate();
@@ -99,9 +99,6 @@ function HomePage() {
       case "delete":
         handleDeleteGame(gameId);
         break;
-      case "download":
-        handleDownloadGame(gameId);
-        break;
     }
   };
 
@@ -131,111 +128,6 @@ function HomePage() {
     });
   };
 
-  /**
-   * 下载单个对局
-   * @param gameId - 对局ID
-   */
-  const handleDownloadGame = async (gameId: number) => {
-    try {
-      const game = games.find((g) => g.id === gameId);
-      if (!game) {
-        messageApi.error("对局不存在");
-        return;
-      }
-
-      const dataStr = JSON.stringify([game], null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${game.title}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      messageApi.success("对局下载成功");
-    } catch (error) {
-      console.error("下载对局失败:", error);
-      messageApi.error("下载对局失败");
-    }
-  };
-
-  /**
-   * 下载所有对局
-   */
-  const handleDownloadAllGames = async () => {
-    try {
-      if (games.length === 0) {
-        messageApi.warning("暂无对局可下载");
-        return;
-      }
-
-      const dataStr = JSON.stringify(games, null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "doudizhu-games.json";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      messageApi.success(`成功下载 ${games.length} 个对局`);
-    } catch (error) {
-      console.error("下载所有对局失败:", error);
-      messageApi.error("下载所有对局失败");
-    }
-  };
-
-  /**
-   * 上传对局文件
-   */
-  const handleUploadGames = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
-    input.onchange = async (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      try {
-        const text = await file.text();
-        const importedGames = JSON.parse(text);
-
-        if (!Array.isArray(importedGames)) {
-          messageApi.error("文件格式错误：应为对局数组");
-          return;
-        }
-
-        // 验证数据格式
-        for (const game of importedGames) {
-          if (!game.title || !game.cards || !game.firstPlayer) {
-            messageApi.error("文件格式错误：缺少必要字段");
-            return;
-          }
-        }
-
-        // 导入数据（移除ID让数据库自动分配）
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const gamesWithoutId = importedGames.map(({ id, ...rest }) => rest);
-        const importedIds = await GameDatabaseService.importGames(
-          gamesWithoutId
-        );
-
-        messageApi.success(`成功导入 ${importedIds.length} 个对局`);
-        await reloadGames();
-      } catch (error) {
-        console.error("上传对局失败:", error);
-        messageApi.error("上传对局失败：文件格式错误");
-      }
-    };
-    input.click();
-  };
-
   // 更多菜单
   const getContextMenu = (gameId: number): MenuProps => ({
     items: [
@@ -254,15 +146,6 @@ function HomePage() {
           <div className="flex items-center gap-2 text-red-500">
             <span className="i-mdi-delete text-base"></span>
             删除
-          </div>
-        ),
-      },
-      {
-        key: "download",
-        label: (
-          <div className="flex items-center gap-2">
-            <span className="i-mdi-download text-base"></span>
-            下载
           </div>
         ),
       },
@@ -305,23 +188,7 @@ function HomePage() {
           </Col>
 
           {/* 操作按钮 */}
-          <Col xs={8} sm={2}>
-            <Button size="large" className="w-full" onClick={handleUploadGames}>
-              <span>上传对局</span>
-            </Button>
-          </Col>
-
-          <Col xs={8} sm={2}>
-            <Button
-              size="large"
-              className="w-full"
-              onClick={handleDownloadAllGames}
-            >
-              <span>下载对局</span>
-            </Button>
-          </Col>
-
-          <Col xs={8} sm={2}>
+          <Col xs={24} sm={6}>
             <Button
               type="primary"
               size="large"
