@@ -6,7 +6,7 @@ import {
   type PlayerCards,
   type Game,
 } from "../data/mockGames";
-import HandCards from "../components/HandCards";
+import Player from "../components/Player";
 import PlayedCards from "../components/PlayedCards";
 import { type CardValue } from "../components/Card";
 import GameDatabaseService from "../services/gameDatabase";
@@ -495,151 +495,44 @@ function GamePage() {
       <div className="flex-1 p-6 flex flex-col !lg:flex-row gap-4">
         <div className="flex flex-col justify-between gap-4 lg:w-screen-xl">
           {/* 地主 */}
-          <div className="flex flex-col gap-4">
-            <div
-              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "landlord" && !isEditMode
-                  ? "ring-2 ring-blue-500"
-                  : ""
-              }`}
-            >
-              地主
-            </div>
-            {/* 手牌展示 */}
-            {currentCards.landlord.length > 0 && (
-              <HandCards
-                cards={currentCards.landlord}
-                selectedIndexes={
-                  currentPlayer === "landlord" && !isEditMode
-                    ? selectedCards
-                    : []
-                }
-                disabled={currentPlayer !== "landlord" || isEditMode}
-                onSelectionChange={setSelectedCards}
-              />
-            )}
-            {isEditMode ? (
-              <Button
-                type="primary"
-                onClick={() => handleEditCards("landlord")}
-              >
-                编辑手牌
-              </Button>
-            ) : (
-              currentPlayer === "landlord" &&
-              !isGameEnded && (
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    onClick={() => handlePass("landlord")}
-                  >
-                    过牌
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    type="primary"
-                    onClick={() => handlePlayCards("landlord")}
-                  >
-                    出牌
-                  </Button>
-                </div>
-              )
-            )}
-          </div>
+          <Player
+            playerType="landlord"
+            cards={currentCards.landlord}
+            selectedIndexes={selectedCards}
+            isCurrentPlayer={currentPlayer === "landlord"}
+            isEditMode={isEditMode}
+            isGameEnded={isGameEnded}
+            onSelectionChange={setSelectedCards}
+            onPass={handlePass}
+            onPlayCards={handlePlayCards}
+            onEditCards={handleEditCards}
+          />
           {/* 下家 */}
-          <div className="flex flex-col gap-4">
-            <div
-              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "farmer1" ? "ring-2 ring-blue-500" : ""
-              }`}
-            >
-              下家
-            </div>
-            {/* 手牌展示 */}
-            {currentCards.farmer1.length > 0 && (
-              <HandCards
-                cards={currentCards.farmer1}
-                selectedIndexes={
-                  currentPlayer === "farmer1" && !isEditMode
-                    ? selectedCards
-                    : []
-                }
-                disabled={currentPlayer !== "farmer1" || isEditMode}
-                onSelectionChange={setSelectedCards}
-              />
-            )}
-            {isEditMode ? (
-              <Button type="primary" onClick={() => handleEditCards("farmer1")}>
-                编辑手牌
-              </Button>
-            ) : (
-              currentPlayer === "farmer1" &&
-              !isGameEnded && (
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    onClick={() => handlePass("farmer1")}
-                  >
-                    过牌
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    type="primary"
-                    onClick={() => handlePlayCards("farmer1")}
-                  >
-                    出牌
-                  </Button>
-                </div>
-              )
-            )}
-          </div>
+          <Player
+            playerType="farmer1"
+            cards={currentCards.farmer1}
+            selectedIndexes={selectedCards}
+            isCurrentPlayer={currentPlayer === "farmer1"}
+            isEditMode={isEditMode}
+            isGameEnded={isGameEnded}
+            onSelectionChange={setSelectedCards}
+            onPass={handlePass}
+            onPlayCards={handlePlayCards}
+            onEditCards={handleEditCards}
+          />
           {/* 顶家 */}
-          <div className="flex flex-col gap-4">
-            <div
-              className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-                currentPlayer === "farmer2" ? "ring-2 ring-blue-500" : ""
-              }`}
-            >
-              顶家
-            </div>
-            {/* 手牌展示 */}
-            {currentCards.farmer2.length > 0 && (
-              <HandCards
-                cards={currentCards.farmer2}
-                selectedIndexes={
-                  currentPlayer === "farmer2" && !isEditMode
-                    ? selectedCards
-                    : []
-                }
-                disabled={currentPlayer !== "farmer2" || isEditMode}
-                onSelectionChange={setSelectedCards}
-              />
-            )}
-            {isEditMode ? (
-              <Button type="primary" onClick={() => handleEditCards("farmer2")}>
-                编辑手牌
-              </Button>
-            ) : (
-              currentPlayer === "farmer2" &&
-              !isGameEnded && (
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    onClick={() => handlePass("farmer2")}
-                  >
-                    过牌
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    type="primary"
-                    onClick={() => handlePlayCards("farmer2")}
-                  >
-                    出牌
-                  </Button>
-                </div>
-              )
-            )}
-          </div>
+          <Player
+            playerType="farmer2"
+            cards={currentCards.farmer2}
+            selectedIndexes={selectedCards}
+            isCurrentPlayer={currentPlayer === "farmer2"}
+            isEditMode={isEditMode}
+            isGameEnded={isGameEnded}
+            onSelectionChange={setSelectedCards}
+            onPass={handlePass}
+            onPlayCards={handlePlayCards}
+            onEditCards={handleEditCards}
+          />
         </div>
         {/* 牌堆 */}
         <div className="flex-1">
