@@ -217,8 +217,9 @@ function GamePage() {
   const validateCardsInput = (
     input: string
   ): { isValid: boolean; cards: CardValue[]; error?: string } => {
-    const trimmedInput = input.trim();
-    if (!trimmedInput) {
+    // 自动移除所有空白符（包括空格、制表符、换行符等）
+    const cleanedInput = input.replace(/\s/g, "");
+    if (!cleanedInput) {
       return { isValid: true, cards: [] };
     }
 
@@ -226,19 +227,19 @@ function GamePage() {
     const cards: CardValue[] = [];
     let i = 0;
 
-    while (i < trimmedInput.length) {
+    while (i < cleanedInput.length) {
       let cardStr = "";
 
       // 检查是否为10（两个字符）
       if (
-        i < trimmedInput.length - 1 &&
-        trimmedInput.slice(i, i + 2) === "10"
+        i < cleanedInput.length - 1 &&
+        cleanedInput.slice(i, i + 2) === "10"
       ) {
         cardStr = "10";
         i += 2;
       } else {
         // 单个字符的牌
-        cardStr = trimmedInput[i];
+        cardStr = cleanedInput[i];
         i += 1;
       }
 
