@@ -121,6 +121,9 @@ function GamePage() {
   /** 牌堆中的牌（最近一次出牌） */
   const [playedCards, setPlayedCards] = useState<CardValue[]>([]);
 
+  /** 出牌的玩家身份 */
+  const [playedBy, setPlayedBy] = useState<PlayerType | null>(null);
+
   /** 当前对局的手牌状态（可变） */
   const [currentCards, setCurrentCards] = useState<PlayerCards>({
     landlord: [],
@@ -265,6 +268,8 @@ function GamePage() {
       setSelectedCards([]);
       // 清空牌堆
       setPlayedCards([]);
+      // 清空出牌玩家身份
+      setPlayedBy(null);
       // 重置游戏结束状态
       setIsGameEnded(false);
     }
@@ -512,6 +517,8 @@ function GamePage() {
 
     // 将排序后的牌显示在牌堆中（覆盖之前的牌）
     setPlayedCards(sortedSelectedCards);
+    // 记录出牌的玩家身份
+    setPlayedBy(player);
 
     // 从玩家手牌中移除已出的牌
     const newPlayerCards = playerCards.filter(
@@ -615,7 +622,7 @@ function GamePage() {
         </div>
         {/* 牌堆 */}
         <div className="flex-1">
-          <PlayedCards playedCards={playedCards} />
+          <PlayedCards playedCards={playedCards} playedBy={playedBy} />
         </div>
       </div>
 

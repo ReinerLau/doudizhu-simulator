@@ -88,11 +88,23 @@ export interface HandCardsProps {
 }
 
 /**
+ * 牌堆数据类型
+ */
+export interface PlayedCardsData {
+  /** 出牌的玩家身份 */
+  player: PlayerType | null;
+  /** 出的牌 */
+  cards: CardValue[];
+}
+
+/**
  * 牌堆组件属性
  */
 export interface PlayedCardsProps {
   /** 当前牌堆中的牌（最近一次出牌） */
   playedCards: CardValue[];
+  /** 出牌的玩家身份 */
+  playedBy?: PlayerType | null;
 }
 
 /** Player 组件的属性接口 */
