@@ -79,6 +79,19 @@ const sortPlayedCards = (cards: CardValue[]): CardValue[] => {
 };
 
 /**
+ * 对手牌进行排序
+ * 规则：按照手牌大小顺序排列（D > X > 2 > A > K > Q > J > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3），不考虑数量
+ * @param cards - 要排序的卡牌数组
+ * @returns 排序后的卡牌数组
+ */
+const sortHandCards = (cards: CardValue[]): CardValue[] => {
+  // 按照优先级降序排序（优先级高的排在左侧，从大到小）
+  return cards.sort((a, b) => {
+    return cardPriority[b] - cardPriority[a];
+  });
+};
+
+/**
  * 对局页面组件 - 支持正常模式和编辑模式
  * 展示斗地主对局的游戏界面，包含地主、下家、顶家的手牌和操作
  */
@@ -368,10 +381,11 @@ function GamePage() {
       return;
     }
 
-    // 更新手牌
+    // 对手牌进行排序并更新
+    const sortedCards = sortHandCards([...validation.cards]);
     setCurrentCards((prev) => ({
       ...prev,
-      [editingPlayer]: validation.cards,
+      [editingPlayer]: sortedCards,
     }));
 
     setEditCardsModalVisible(false);
