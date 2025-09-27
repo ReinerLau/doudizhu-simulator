@@ -24,6 +24,7 @@ function Player({
   onPass,
   onPlayCards,
   onEditCards,
+  onSetFirstPlayer,
 }: PlayerProps) {
   /** 获取玩家显示名称 */
   const displayName = playerDisplayNames[playerType];
@@ -35,13 +36,21 @@ function Player({
   const shouldShowActionButtons =
     isCurrentPlayer && !isEditMode && !isGameEnded;
 
+  /** 处理设置首发玩家 */
+  const handleSetFirstPlayer = () => {
+    if (isEditMode && onSetFirstPlayer) {
+      onSetFirstPlayer(playerType);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       {/* 玩家身份标识 */}
       <div
         className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-          isCurrentPlayer && !isEditMode ? "ring-2 ring-blue-500" : ""
+          isCurrentPlayer ? "ring-2 ring-blue-500" : ""
         }`}
+        onClick={handleSetFirstPlayer}
       >
         {displayName}
       </div>

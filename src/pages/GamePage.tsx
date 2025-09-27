@@ -343,6 +343,16 @@ function GamePage() {
   };
 
   /**
+   * 设置首发玩家
+   * @param player - 要设置为首发的玩家
+   */
+  const handleSetFirstPlayer = (player: PlayerType) => {
+    if (isEditMode) {
+      setCurrentPlayer(player);
+    }
+  };
+
+  /**
    * 保存对局到数据库
    */
   const handleSaveGame = async () => {
@@ -515,6 +525,7 @@ function GamePage() {
             onPass={handlePass}
             onPlayCards={handlePlayCards}
             onEditCards={handleEditCards}
+            onSetFirstPlayer={handleSetFirstPlayer}
           />
           {/* 下家 */}
           <Player
@@ -528,6 +539,7 @@ function GamePage() {
             onPass={handlePass}
             onPlayCards={handlePlayCards}
             onEditCards={handleEditCards}
+            onSetFirstPlayer={handleSetFirstPlayer}
           />
           {/* 顶家 */}
           <Player
@@ -541,6 +553,7 @@ function GamePage() {
             onPass={handlePass}
             onPlayCards={handlePlayCards}
             onEditCards={handleEditCards}
+            onSetFirstPlayer={handleSetFirstPlayer}
           />
         </div>
         {/* 牌堆 */}

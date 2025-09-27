@@ -117,4 +117,6 @@ export interface PlayerProps {
   onPlayCards: (player: PlayerType) => void;
   /** 编辑手牌操作回调 */
   onEditCards: (player: PlayerType) => void;
+  /** 设置首发玩家回调 */
+  onSetFirstPlayer?: (player: PlayerType) => void;
 }
