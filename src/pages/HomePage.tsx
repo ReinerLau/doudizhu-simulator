@@ -171,7 +171,7 @@ function HomePage() {
   }
 
   return (
-    <div className="h-dvh bg-gray-50 p-6">
+    <div className="h-dvh bg-gray-50 p-6 flex flex-col">
       {contextHolder}
       {modalContextHolder}
       {/* 操作栏 */}
@@ -202,37 +202,39 @@ function HomePage() {
       </div>
 
       {/* 对局卡片网格 */}
-      <Row gutter={[16, 16]}>
-        {filteredGames.map((game) => (
-          <Col key={game.id} xs={24} sm={6}>
-            <Card
-              hoverable
-              className="cursor-pointer transition-all duration-200 hover:shadow-md relative"
-              onClick={() => handleCardClick(game.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1 flex items-center justify-center">
-                  <h3 className="text-lg">{game.title}</h3>
+      <div className="flex-1 overflow-y-scroll">
+        <Row className="w-full" gutter={[8, 8]}>
+          {filteredGames.map((game) => (
+            <Col key={game.id} xs={24} sm={6}>
+              <Card
+                hoverable
+                className="cursor-pointer transition-all duration-200 hover:shadow-md relative"
+                onClick={() => handleCardClick(game.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 flex items-center justify-center">
+                    <h3 className="text-lg">{game.title}</h3>
+                  </div>
                 </div>
-              </div>
-              {/* 更多操作按钮 */}
-              <Dropdown menu={getContextMenu(game.id)} trigger={["click"]}>
-                <Button
-                  type="text"
-                  size="small"
-                  className="absolute top-2 right-2 p-1 hover:bg-gray-100"
-                  onClick={(e) => {
-                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片点击
-                  }}
-                  icon={
-                    <div className="i-mdi-dots-horizontal  text-base"></div>
-                  }
-                />
-              </Dropdown>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+                {/* 更多操作按钮 */}
+                <Dropdown menu={getContextMenu(game.id)} trigger={["click"]}>
+                  <Button
+                    type="text"
+                    size="small"
+                    className="absolute top-2 right-2 p-1 hover:bg-gray-100"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 阻止事件冒泡，避免触发卡片点击
+                    }}
+                    icon={
+                      <div className="i-mdi-dots-horizontal  text-base"></div>
+                    }
+                  />
+                </Dropdown>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
     </div>
   );
 }

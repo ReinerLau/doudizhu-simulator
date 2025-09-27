@@ -575,7 +575,7 @@ function GamePage() {
       </div>
 
       {/* 对局区域 */}
-      <div className="flex-1 p-6 flex flex-col !lg:flex-row gap-4">
+      <div className="flex-1 p-6 flex flex-col !lg:flex-row gap-4 overflow-y-scroll">
         <div className="flex flex-col justify-between gap-4 lg:w-screen-xl">
           {/* 地主 */}
           <Player
