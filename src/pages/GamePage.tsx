@@ -29,6 +29,56 @@ const validCardValues: CardValue[] = [
 ];
 
 /**
+ * 卡牌优先级映射 - 用于排序
+ * 数值越大，优先级越高，排序时会放在右侧
+ */
+const cardPriority: Record<CardValue, number> = {
+  D: 15, // 大王
+  X: 14, // 小王
+  "2": 13,
+  A: 12,
+  K: 11,
+  Q: 10,
+  J: 9,
+  "10": 8,
+  "9": 7,
+  "8": 6,
+  "7": 5,
+  "6": 4,
+  "5": 3,
+  "4": 2,
+  "3": 1,
+};
+
+/**
+ * 对出牌进行排序
+ * 规则：多张相同类型手牌优先放在左侧，不同类型的手牌按照从大到小、从左往右的顺序排列（D > X > 2 > A > K > Q > J > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3）
+ * @param cards - 要排序的卡牌数组
+ * @returns 排序后的卡牌数组
+ */
+const sortPlayedCards = (cards: CardValue[]): CardValue[] => {
+  // 统计每种卡牌的数量
+  const cardCount: Record<CardValue, number> = {} as Record<CardValue, number>;
+  cards.forEach((card) => {
+    cardCount[card] = (cardCount[card] || 0) + 1;
+  });
+
+  // 按照规则排序：先按数量降序（多张的在左侧），数量相同时按优先级降序（大牌在左侧）
+  return cards.sort((a, b) => {
+    const countA = cardCount[a];
+    const countB = cardCount[b];
+
+    // 如果数量不同，数量多的排在左侧（多张相同类型优先放在左侧）
+    if (countA !== countB) {
+      return countB - countA;
+    }
+
+    // 数量相同时，按照优先级降序排序（优先级高的排在左侧，从大到小）
+    return cardPriority[b] - cardPriority[a];
+  });
+};
+
+/**
  * 对局页面组件 - 支持正常模式和编辑模式
  * 展示斗地主对局的游戏界面，包含地主、下家、顶家的手牌和操作
  */
@@ -174,7 +224,6 @@ function GamePage() {
       const gameWinner = checkGameEnd(currentCards);
       if (gameWinner && !isGameEnded) {
         setIsGameEnded(true);
-        console.log(`游戏结束！获胜者: ${gameWinner}`);
       }
     }
   }, [currentCards, isGameEnded]);
@@ -205,7 +254,6 @@ function GamePage() {
       setPlayedCards([]);
       // 重置游戏结束状态
       setIsGameEnded(false);
-      console.log("对局已重置到初始状态");
     }
   };
 
@@ -411,17 +459,14 @@ function GamePage() {
   const handlePass = (player: PlayerType) => {
     // 检查游戏是否已结束
     if (isGameEnded) {
-      console.log(`游戏已结束，无法进行过牌操作`);
       return;
     }
 
     // 检查是否轮到该玩家
     if (player !== currentPlayer) {
-      console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
       return;
     }
 
-    console.log(`${player} 过牌`);
     // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
   };
@@ -433,28 +478,26 @@ function GamePage() {
   const handlePlayCards = (player: PlayerType) => {
     // 检查游戏是否已结束
     if (isGameEnded) {
-      console.log(`游戏已结束，无法进行出牌操作`);
       return;
     }
 
     // 检查是否轮到该玩家
     if (player !== currentPlayer) {
-      console.log(`还没轮到 ${player}，当前轮到 ${currentPlayer}`);
       return;
     }
 
     if (selectedCards.length === 0) {
-      console.log(`${player} 没有选中任何牌`);
       return;
     }
 
     const playerCards = currentCards[player];
     const selectedCardValues = selectedCards.map((index) => playerCards[index]);
 
-    console.log(`${player} 出牌:`, selectedCardValues);
+    // 对出牌进行排序
+    const sortedSelectedCards = sortPlayedCards([...selectedCardValues]);
 
-    // 将选中的牌显示在牌堆中（覆盖之前的牌）
-    setPlayedCards(selectedCardValues);
+    // 将排序后的牌显示在牌堆中（覆盖之前的牌）
+    setPlayedCards(sortedSelectedCards);
 
     // 从玩家手牌中移除已出的牌
     const newPlayerCards = playerCards.filter(
@@ -472,7 +515,6 @@ function GamePage() {
     const gameWinner = checkGameEnd(newCards);
     if (gameWinner) {
       setIsGameEnded(true);
-      console.log(`游戏结束！获胜者: ${gameWinner}`);
       // 清空选中的牌，但不切换到下一个玩家
       setSelectedCards([]);
     } else {
