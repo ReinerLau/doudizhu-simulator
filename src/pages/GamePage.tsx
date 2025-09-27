@@ -481,7 +481,7 @@ function GamePage() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-dvh bg-gray-50 flex flex-col">
       {contextHolder}
       {/* 顶部操作栏 */}
       <div className="bg-white shadow-sm p-4">

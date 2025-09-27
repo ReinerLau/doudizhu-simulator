@@ -171,7 +171,7 @@ function HomePage() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 p-6">
+    <div className="h-dvh bg-gray-50 p-6">
       {contextHolder}
       {modalContextHolder}
       {/* 操作栏 */}
