@@ -3,16 +3,16 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "virtual:uno.css";
 import App from "./App.tsx";
-import { BrowserRouter } from "react-router";
+import { HashRouter } from "react-router";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter basename="/doudizhu-simulator">
+    <HashRouter>
       <ConfigProvider locale={zhCN}>
         <App />
       </ConfigProvider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 );
