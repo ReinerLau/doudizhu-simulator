@@ -9,7 +9,7 @@ import zhCN from "antd/locale/zh_CN";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/doudizhu-simulator">
       <ConfigProvider locale={zhCN}>
         <App />
       </ConfigProvider>
