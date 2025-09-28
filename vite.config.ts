@@ -14,6 +14,7 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
+        name: "斗地主模拟器",
         theme_color: "#ffffff",
         icons: [
           {
