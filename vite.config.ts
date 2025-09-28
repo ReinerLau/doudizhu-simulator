@@ -14,6 +14,7 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
+        theme_color: "#ffffff",
         icons: [
           {
             src: "pwa-64x64.png",
