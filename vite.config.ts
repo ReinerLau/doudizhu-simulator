@@ -14,7 +14,8 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
-        name: "斗地主模拟器",
+        name: "Doudizhu",
+        short_name: "Doudizhu",
         theme_color: "#ffffff",
         icons: [
           {
