@@ -44,29 +44,7 @@ function Player({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 玩家身份标识 */}
-      <div
-        className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
-          isCurrentPlayer ? "ring-2 ring-blue-500" : ""
-        }`}
-        onClick={handleSetFirstPlayer}
-      >
-        {displayName}
-      </div>
-
-      {/* 手牌展示 */}
-      {cards.length > 0 && (
-        <HandCards
-          cards={cards}
-          selectedIndexes={
-            isCurrentPlayer && !isEditMode ? selectedIndexes : []
-          }
-          disabled={isHandCardsDisabled}
-          onSelectionChange={onSelectionChange}
-        />
-      )}
-
+    <div className="flex flex-col gap-4 justify-center h-full">
       {/* 操作按钮区域 */}
       {isEditMode ? (
         <Button type="primary" onClick={() => onEditCards(playerType)}>
@@ -88,6 +66,26 @@ function Player({
           </div>
         )
       )}
+      {/* 手牌展示 */}
+      {cards.length > 0 && (
+        <HandCards
+          cards={cards}
+          selectedIndexes={
+            isCurrentPlayer && !isEditMode ? selectedIndexes : []
+          }
+          disabled={isHandCardsDisabled}
+          onSelectionChange={onSelectionChange}
+        />
+      )}
+      {/* 玩家身份标识 */}
+      <div
+        className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
+          isCurrentPlayer ? "ring-2 ring-blue-500" : ""
+        }`}
+        onClick={handleSetFirstPlayer}
+      >
+        {displayName}
+      </div>
     </div>
   );
 }

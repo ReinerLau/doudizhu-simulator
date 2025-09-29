@@ -1,4 +1,4 @@
-import { Button, Modal, Input, message } from "antd";
+import { Button, Modal, Input, message, Row, Col } from "antd";
 import { useNavigate, useParams, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import Player from "../components/Player";
@@ -235,6 +235,33 @@ function GamePage() {
     setCurrentPlayer(playerOrder[nextIndex]);
     // 切换玩家时清空选中的牌
     setSelectedCards([]);
+  };
+
+  /**
+   * 获取四个区域的玩家分配
+   * 根据当前玩家和上一轮出牌玩家来确定每个区域显示哪个玩家
+   * @returns 四个区域的玩家分配对象
+   */
+  const getPlayerPositions = () => {
+    const currentIndex = playerOrder.indexOf(currentPlayer);
+
+    // 当轮要出牌的玩家
+    const currentTurnPlayer = currentPlayer;
+
+    // 准备下一轮出牌的玩家
+    const nextPlayerIndex = (currentIndex + 1) % playerOrder.length;
+    const nextTurnPlayer = playerOrder[nextPlayerIndex];
+
+    // 上一轮已经出牌的玩家
+    const prevPlayerIndex =
+      (currentIndex - 1 + playerOrder.length) % playerOrder.length;
+    const prevTurnPlayer = playerOrder[prevPlayerIndex];
+
+    return {
+      nextTurnPlayer, // 准备下一轮出牌的玩家
+      prevTurnPlayer, // 上一轮已经出牌的玩家
+      currentTurnPlayer, // 当轮要出牌的玩家
+    };
   };
 
   /**
@@ -649,63 +676,85 @@ function GamePage() {
       </div>
 
       {/* 对局区域 */}
-      <div className="flex-1 p-6 flex flex-col !lg:flex-row gap-4 overflow-y-scroll">
-        <div className="flex flex-col justify-between gap-4 lg:w-screen-xl">
-          {/* 地主 */}
-          <Player
-            playerType="landlord"
-            cards={currentCards.landlord}
-            selectedIndexes={selectedCards}
-            isCurrentPlayer={currentPlayer === "landlord"}
-            isEditMode={isEditMode}
-            isGameEnded={isGameEnded}
-            onSelectionChange={setSelectedCards}
-            onPass={handlePass}
-            onPlayCards={handlePlayCards}
-            onEditCards={handleEditCards}
-            onSetFirstPlayer={handleSetFirstPlayer}
-          />
-          {/* 下家 */}
-          <Player
-            playerType="farmer1"
-            cards={currentCards.farmer1}
-            selectedIndexes={selectedCards}
-            isCurrentPlayer={currentPlayer === "farmer1"}
-            isEditMode={isEditMode}
-            isGameEnded={isGameEnded}
-            onSelectionChange={setSelectedCards}
-            onPass={handlePass}
-            onPlayCards={handlePlayCards}
-            onEditCards={handleEditCards}
-            onSetFirstPlayer={handleSetFirstPlayer}
-          />
-          {/* 顶家 */}
-          <Player
-            playerType="farmer2"
-            cards={currentCards.farmer2}
-            selectedIndexes={selectedCards}
-            isCurrentPlayer={currentPlayer === "farmer2"}
-            isEditMode={isEditMode}
-            isGameEnded={isGameEnded}
-            onSelectionChange={setSelectedCards}
-            onPass={handlePass}
-            onPlayCards={handlePlayCards}
-            onEditCards={handleEditCards}
-            onSetFirstPlayer={handleSetFirstPlayer}
-          />
-        </div>
-        {/* 牌堆 */}
-        <div className="flex-1 flex flex-col bg-white rounded-lg shadow p-4">
-          <div className="flex-1">
-            <PlayedCards playedCards={playedCards} playedBy={playedBy} />
-          </div>
-          {/* 撤回按钮 - 只在非编辑模式且有出牌或过牌记录时显示 */}
-          {!isEditMode && gameHistory.length > 0 && (
-            <Button className="w-full" onClick={handleUndo}>
-              撤回
-            </Button>
-          )}
-        </div>
+      <div className="flex-1 p-6 gap-4">
+        <Row gutter={[16, 16]}>
+          {(() => {
+            const { nextTurnPlayer, prevTurnPlayer, currentTurnPlayer } =
+              getPlayerPositions();
+
+            return (
+              <>
+                {/* 上一轮已经出牌的玩家 */}
+                <Col span={12}>
+                  <Player
+                    playerType={prevTurnPlayer}
+                    cards={currentCards[prevTurnPlayer]}
+                    selectedIndexes={selectedCards}
+                    isCurrentPlayer={currentPlayer === prevTurnPlayer}
+                    isEditMode={isEditMode}
+                    isGameEnded={isGameEnded}
+                    onSelectionChange={setSelectedCards}
+                    onPass={handlePass}
+                    onPlayCards={handlePlayCards}
+                    onEditCards={handleEditCards}
+                    onSetFirstPlayer={handleSetFirstPlayer}
+                  />
+                </Col>
+                {/* 准备下一轮出牌的玩家 */}
+                <Col span={12}>
+                  <Player
+                    playerType={nextTurnPlayer}
+                    cards={currentCards[nextTurnPlayer]}
+                    selectedIndexes={selectedCards}
+                    isCurrentPlayer={currentPlayer === nextTurnPlayer}
+                    isEditMode={isEditMode}
+                    isGameEnded={isGameEnded}
+                    onSelectionChange={setSelectedCards}
+                    onPass={handlePass}
+                    onPlayCards={handlePlayCards}
+                    onEditCards={handleEditCards}
+                    onSetFirstPlayer={handleSetFirstPlayer}
+                  />
+                </Col>
+
+                {/* 牌堆 */}
+                <Col span={24}>
+                  <div className="h-full flex flex-col bg-white rounded-lg shadow p-4">
+                    <div className="flex-1">
+                      <PlayedCards
+                        playedCards={playedCards}
+                        playedBy={playedBy}
+                      />
+                    </div>
+                    {/* 撤回按钮 - 只在非编辑模式且有出牌或过牌记录时显示 */}
+                    {!isEditMode && gameHistory.length > 0 && (
+                      <Button className="w-full" onClick={handleUndo}>
+                        撤回
+                      </Button>
+                    )}
+                  </div>
+                </Col>
+
+                {/* 当轮要出牌的玩家 */}
+                <Col span={24}>
+                  <Player
+                    playerType={currentTurnPlayer}
+                    cards={currentCards[currentTurnPlayer]}
+                    selectedIndexes={selectedCards}
+                    isCurrentPlayer={currentPlayer === currentTurnPlayer}
+                    isEditMode={isEditMode}
+                    isGameEnded={isGameEnded}
+                    onSelectionChange={setSelectedCards}
+                    onPass={handlePass}
+                    onPlayCards={handlePlayCards}
+                    onEditCards={handleEditCards}
+                    onSetFirstPlayer={handleSetFirstPlayer}
+                  />
+                </Col>
+              </>
+            );
+          })()}
+        </Row>
       </div>
 
       {/* 编辑对局名称弹窗 */}
