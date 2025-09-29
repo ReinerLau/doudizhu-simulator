@@ -16,7 +16,7 @@ const playerDisplayNames: Record<PlayerType, string> = {
 function Player({
   playerType,
   cards,
-  selectedIndexes,
+  selectedIndexes = [],
   isCurrentPlayer,
   isEditMode,
   isGameEnded,
@@ -34,7 +34,7 @@ function Player({
 
   /** 是否显示操作按钮 */
   const shouldShowActionButtons =
-    isCurrentPlayer && !isEditMode && !isGameEnded;
+    isCurrentPlayer && !isEditMode && !isGameEnded && onPass && onPlayCards;
 
   /** 处理设置首发玩家 */
   const handleSetFirstPlayer = () => {
@@ -53,13 +53,13 @@ function Player({
       ) : (
         shouldShowActionButtons && (
           <div className="flex gap-2">
-            <Button className="flex-1" onClick={() => onPass(playerType)}>
+            <Button className="flex-1" onClick={() => onPass?.(playerType)}>
               过牌
             </Button>
             <Button
               className="flex-1"
               type="primary"
-              onClick={() => onPlayCards(playerType)}
+              onClick={() => onPlayCards?.(playerType)}
             >
               出牌
             </Button>

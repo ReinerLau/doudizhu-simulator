@@ -130,22 +130,22 @@ export interface PlayerProps {
   playerType: PlayerType;
   /** 玩家手牌 */
   cards: CardValue[];
-  /** 选中的手牌索引 */
-  selectedIndexes: number[];
   /** 是否为当前轮次的玩家 */
   isCurrentPlayer: boolean;
   /** 是否为编辑模式 */
   isEditMode: boolean;
   /** 游戏是否已结束 */
   isGameEnded: boolean;
-  /** 手牌选择变化回调 */
-  onSelectionChange: (indexes: number[]) => void;
-  /** 过牌操作回调 */
-  onPass: (player: PlayerType) => void;
-  /** 出牌操作回调 */
-  onPlayCards: (player: PlayerType) => void;
   /** 编辑手牌操作回调 */
   onEditCards: (player: PlayerType) => void;
   /** 设置首发玩家回调 */
   onSetFirstPlayer?: (player: PlayerType) => void;
+  /** 选中的手牌索引 - 只有当前玩家需要 */
+  selectedIndexes?: number[];
+  /** 手牌选择变化回调 - 只有当前玩家需要 */
+  onSelectionChange?: (indexes: number[]) => void;
+  /** 过牌操作回调 - 只有当前玩家需要 */
+  onPass?: (player: PlayerType) => void;
+  /** 出牌操作回调 - 只有当前玩家需要 */
+  onPlayCards?: (player: PlayerType) => void;
 }

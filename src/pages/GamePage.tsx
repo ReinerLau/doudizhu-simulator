@@ -693,13 +693,9 @@ function GamePage() {
                   <Player
                     playerType={prevTurnPlayer}
                     cards={currentCards[prevTurnPlayer]}
-                    selectedIndexes={selectedCards}
-                    isCurrentPlayer={currentPlayer === prevTurnPlayer}
+                    isCurrentPlayer={false}
                     isEditMode={isEditMode}
                     isGameEnded={isGameEnded}
-                    onSelectionChange={setSelectedCards}
-                    onPass={handlePass}
-                    onPlayCards={handlePlayCards}
                     onEditCards={handleEditCards}
                     onSetFirstPlayer={handleSetFirstPlayer}
                   />
@@ -709,13 +705,9 @@ function GamePage() {
                   <Player
                     playerType={nextTurnPlayer}
                     cards={currentCards[nextTurnPlayer]}
-                    selectedIndexes={selectedCards}
-                    isCurrentPlayer={currentPlayer === nextTurnPlayer}
+                    isCurrentPlayer={false}
                     isEditMode={isEditMode}
                     isGameEnded={isGameEnded}
-                    onSelectionChange={setSelectedCards}
-                    onPass={handlePass}
-                    onPlayCards={handlePlayCards}
                     onEditCards={handleEditCards}
                     onSetFirstPlayer={handleSetFirstPlayer}
                   />
@@ -744,15 +736,15 @@ function GamePage() {
                   <Player
                     playerType={currentTurnPlayer}
                     cards={currentCards[currentTurnPlayer]}
-                    selectedIndexes={selectedCards}
-                    isCurrentPlayer={currentPlayer === currentTurnPlayer}
+                    isCurrentPlayer={true}
                     isEditMode={isEditMode}
                     isGameEnded={isGameEnded}
+                    onEditCards={handleEditCards}
+                    onSetFirstPlayer={handleSetFirstPlayer}
+                    selectedIndexes={selectedCards}
                     onSelectionChange={setSelectedCards}
                     onPass={handlePass}
                     onPlayCards={handlePlayCards}
-                    onEditCards={handleEditCards}
-                    onSetFirstPlayer={handleSetFirstPlayer}
                   />
                 </Col>
               </>
