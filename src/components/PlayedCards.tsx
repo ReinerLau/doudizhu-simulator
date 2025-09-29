@@ -27,7 +27,7 @@ const getPlayerDisplayName = (playerType: PlayerType): string => {
  */
 const PlayedCards: React.FC<PlayedCardsProps> = ({ playedCards, playedBy }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-4 h-full flex flex-col items-center justify-center gap-2">
+    <div className="h-full flex flex-col items-center justify-center gap-2">
       {/* 出牌玩家身份 */}
       {playedBy && <Tag className="m-0">{getPlayerDisplayName(playedBy)}</Tag>}
 

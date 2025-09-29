@@ -107,6 +107,23 @@ export interface PlayedCardsProps {
   playedBy?: PlayerType | null;
 }
 
+/**
+ * 游戏历史记录快照
+ * 用于撤回功能，记录每次出牌前的游戏状态
+ */
+export interface GameSnapshot {
+  /** 手牌状态 */
+  cards: PlayerCards;
+  /** 当前玩家 */
+  currentPlayer: PlayerType;
+  /** 牌堆中的牌 */
+  playedCards: CardValue[];
+  /** 出牌的玩家身份 */
+  playedBy: PlayerType | null;
+  /** 游戏是否结束 */
+  isGameEnded: boolean;
+}
+
 /** Player 组件的属性接口 */
 export interface PlayerProps {
   /** 玩家类型 */

@@ -4,7 +4,13 @@ import { useState, useEffect } from "react";
 import Player from "../components/Player";
 import PlayedCards from "../components/PlayedCards";
 import GameDatabaseService from "../services/gameDatabase";
-import type { PlayerType, PlayerCards, Game, CardValue } from "../types";
+import type {
+  PlayerType,
+  PlayerCards,
+  Game,
+  CardValue,
+  GameSnapshot,
+} from "../types";
 
 /** 玩家出牌顺序 */
 const playerOrder: PlayerType[] = ["landlord", "farmer1", "farmer2"];
@@ -147,6 +153,9 @@ function GamePage() {
   /** 保存状态 */
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  /** 游戏历史记录 - 用于撤回功能 */
+  const [gameHistory, setGameHistory] = useState<GameSnapshot[]>([]);
+
   /**
    * 检查游戏是否结束
    * @param cards - 当前手牌状态
@@ -158,6 +167,57 @@ function GamePage() {
     if (cards.farmer1.length === 0) return "farmer1";
     if (cards.farmer2.length === 0) return "farmer2";
     return null;
+  };
+
+  /**
+   * 创建当前游戏状态的快照
+   * @returns 当前游戏状态快照
+   */
+  const createGameSnapshot = (): GameSnapshot => {
+    return {
+      cards: {
+        landlord: [...currentCards.landlord],
+        farmer1: [...currentCards.farmer1],
+        farmer2: [...currentCards.farmer2],
+      },
+      currentPlayer,
+      playedCards: [...playedCards],
+      playedBy,
+      isGameEnded,
+    };
+  };
+
+  /**
+   * 恢复游戏状态到指定快照
+   * @param snapshot - 要恢复的游戏状态快照
+   */
+  const restoreGameSnapshot = (snapshot: GameSnapshot) => {
+    setCurrentCards(snapshot.cards);
+    setCurrentPlayer(snapshot.currentPlayer);
+    setPlayedCards(snapshot.playedCards);
+    setPlayedBy(snapshot.playedBy);
+    setIsGameEnded(snapshot.isGameEnded);
+    // 清空选中的牌
+    setSelectedCards([]);
+  };
+
+  /**
+   * 撤回到上一次操作前的状态
+   * 支持连续撤回出牌和过牌操作，直到记录清空
+   */
+  const handleUndo = () => {
+    if (gameHistory.length === 0) {
+      return;
+    }
+
+    // 获取最后一个历史记录
+    const lastSnapshot = gameHistory[gameHistory.length - 1];
+
+    // 恢复到该状态
+    restoreGameSnapshot(lastSnapshot);
+
+    // 移除最后一个历史记录
+    setGameHistory((prev) => prev.slice(0, -1));
   };
 
   /**
@@ -215,6 +275,8 @@ function GamePage() {
         farmer1: [],
         farmer2: [],
       });
+      // 清空游戏历史记录
+      setGameHistory([]);
     } else if (currentGame) {
       // 编辑或正常模式：使用现有数据
       setGameTitle(currentGame.title);
@@ -224,6 +286,8 @@ function GamePage() {
         farmer1: [...currentGame.cards.farmer1],
         farmer2: [...currentGame.cards.farmer2],
       });
+      // 清空游戏历史记录（每次加载对局时重置）
+      setGameHistory([]);
     }
   }, [currentGame, isNewMode]);
 
@@ -272,6 +336,8 @@ function GamePage() {
       setPlayedBy(null);
       // 重置游戏结束状态
       setIsGameEnded(false);
+      // 清空游戏历史记录
+      setGameHistory([]);
     }
   };
 
@@ -486,6 +552,10 @@ function GamePage() {
       return;
     }
 
+    // 在过牌前保存当前游戏状态快照
+    const snapshot = createGameSnapshot();
+    setGameHistory((prev) => [...prev, snapshot]);
+
     // 切换到下一个玩家（会自动清空选中的牌）
     switchToNextPlayer();
   };
@@ -508,6 +578,10 @@ function GamePage() {
     if (selectedCards.length === 0) {
       return;
     }
+
+    // 在出牌前保存当前游戏状态快照
+    const snapshot = createGameSnapshot();
+    setGameHistory((prev) => [...prev, snapshot]);
 
     const playerCards = currentCards[player];
     const selectedCardValues = selectedCards.map((index) => playerCards[index]);
@@ -621,8 +695,16 @@ function GamePage() {
           />
         </div>
         {/* 牌堆 */}
-        <div className="flex-1">
-          <PlayedCards playedCards={playedCards} playedBy={playedBy} />
+        <div className="flex-1 flex flex-col bg-white rounded-lg shadow p-4">
+          <div className="flex-1">
+            <PlayedCards playedCards={playedCards} playedBy={playedBy} />
+          </div>
+          {/* 撤回按钮 - 只在非编辑模式且有出牌或过牌记录时显示 */}
+          {!isEditMode && gameHistory.length > 0 && (
+            <Button className="w-full" onClick={handleUndo}>
+              撤回
+            </Button>
+          )}
         </div>
       </div>
 
