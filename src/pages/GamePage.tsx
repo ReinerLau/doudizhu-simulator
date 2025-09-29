@@ -649,34 +649,38 @@ function GamePage() {
     <div className="h-dvh bg-gray-50 flex flex-col">
       {contextHolder}
       {/* 顶部操作栏 */}
-      <div className="bg-white shadow-sm p-4">
-        <div className="flex items-center justify-between">
-          <Button onClick={handleGoBack}>返回</Button>
-          <div className="flex flex-col items-center">
-            {/* 对局名称 */}
-            {isEditMode ? (
-              <h1
-                className="text-xl font-semibold cursor-pointer hover:text-blue-500 transition-colors"
-                onClick={handleEditTitle}
-                title="点击编辑对局名称"
-              >
-                {gameTitle}
-              </h1>
-            ) : (
-              <h1 className="text-xl font-semibold">{gameTitle}</h1>
-            )}
-          </div>
-          {!isEditMode && <Button onClick={handleRestart}>重来</Button>}
-          {isEditMode && (
-            <Button type="primary" loading={isSaving} onClick={handleSaveGame}>
-              {isSaving ? "保存中..." : "保存"}
-            </Button>
+      <div className=" flex items-center justify-between p-1">
+        <Button color="default" variant="text" onClick={handleGoBack}>
+          <div className="i-mdi-arrow-left"></div>
+        </Button>
+        <div className="flex flex-col items-center">
+          {/* 对局名称 */}
+          {isEditMode ? (
+            <h1
+              className="text-xsfont-semibold cursor-pointer hover:text-blue-500 transition-colors"
+              onClick={handleEditTitle}
+              title="点击编辑对局名称"
+            >
+              {gameTitle}
+            </h1>
+          ) : (
+            <h1 className="text-xs font-semibold">{gameTitle}</h1>
           )}
         </div>
+        {!isEditMode && (
+          <Button color="default" variant="text" onClick={handleRestart}>
+            <div className="i-mdi-refresh"></div>
+          </Button>
+        )}
+        {isEditMode && (
+          <Button type="primary" loading={isSaving} onClick={handleSaveGame}>
+            {isSaving ? "保存中..." : "保存"}
+          </Button>
+        )}
       </div>
 
       {/* 对局区域 */}
-      <div className="flex-1 p-6 gap-4">
+      <div className="flex-1 p-6">
         <Row gutter={[16, 16]}>
           {(() => {
             const { nextTurnPlayer, prevTurnPlayer, currentTurnPlayer } =

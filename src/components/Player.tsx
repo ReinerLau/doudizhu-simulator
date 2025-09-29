@@ -44,7 +44,7 @@ function Player({
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-center h-full">
+    <div className="flex flex-col gap-2 justify-center h-full">
       {/* 操作按钮区域 */}
       {isEditMode ? (
         <Button type="primary" onClick={() => onEditCards(playerType)}>
@@ -79,7 +79,7 @@ function Player({
       )}
       {/* 玩家身份标识 */}
       <div
-        className={`text-center bg-white rounded-lg shadow p-1 font-bold ${
+        className={`text-xs text-center bg-white rounded-lg shadow p-1 font-bold ${
           isCurrentPlayer ? "ring-2 ring-blue-500" : ""
         }`}
         onClick={handleSetFirstPlayer}

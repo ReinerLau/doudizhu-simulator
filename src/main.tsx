@@ -10,7 +10,7 @@ import zhCN from "antd/locale/zh_CN";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <HashRouter>
-      <ConfigProvider locale={zhCN}>
+      <ConfigProvider componentSize="small" locale={zhCN}>
         <App />
       </ConfigProvider>
     </HashRouter>
